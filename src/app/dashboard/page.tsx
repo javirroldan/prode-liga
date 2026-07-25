@@ -3,6 +3,7 @@ import { getUserTournaments, joinTournament } from "@/actions/tournaments";
 import { getCurrentUser } from "@/actions/auth";
 import { MatchCard } from "@/components/fixture/match-card";
 import { MatchdaySelector } from "@/components/fixture/matchday-selector";
+import { JoinTournamentForm } from "@/components/shared/join-tournament-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
@@ -24,7 +25,7 @@ export default async function DashboardPage({
     getUserTournaments(),
   ]);
 
-  const predictionsCount = matches.filter((m) => m.prediction).length;
+  const predictionsCount = matches.filter((m: { prediction: unknown }) => m.prediction).length;
 
   return (
     <div className="space-y-8">
@@ -69,7 +70,7 @@ export default async function DashboardPage({
             </div>
             <div>
               <p className="text-2xl font-bold">
-                {tournaments.reduce((sum, t) => sum + t.totalPoints, 0)}
+                {tournaments.reduce((sum: number, t: { totalPoints: number }) => sum + t.totalPoints, 0)}
               </p>
               <p className="text-sm text-muted-foreground">Puntos totales</p>
             </div>
@@ -85,20 +86,7 @@ export default async function DashboardPage({
             <CardDescription>Ingresá el código de invitación de tu grupo</CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={joinTournament} className="flex gap-2">
-              <input
-                name="inviteCode"
-                placeholder="Código del torneo"
-                className="flex h-10 w-full rounded-lg border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                required
-              />
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
-              >
-                Unirse
-              </button>
-            </form>
+            <JoinTournamentForm />
           </CardContent>
         </Card>
       )}
@@ -107,7 +95,7 @@ export default async function DashboardPage({
       <div>
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-xl font-semibold">Fecha {currentMatchday}</h2>
-          <MatchdaySelector currentMatchday={currentMatchday} />
+          <MatchdaySelector currentMatchday={currentMatchday} baseUrl="/dashboard" />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -121,7 +109,18 @@ export default async function DashboardPage({
             matches.map((match) => (
               <MatchCard
                 key={match.id}
-                match={match}
+                match={{
+                  id: match.id,
+                  homeTeam: match.homeTeam,
+                  awayTeam: match.awayTeam,
+                  homeGoals: match.homeGoals,
+                  awayGoals: match.awayGoals,
+                  date: match.date instanceof Date ? match.date.toISOString() : String(match.date),
+                  time: match.time,
+                  status: match.status,
+                  homeLogo: match.homeLogo,
+                  awayLogo: match.awayLogo,
+                }}
                 prediction={match.prediction}
               />
             ))

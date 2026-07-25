@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -7,34 +8,34 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface MatchdaySelectorProps {
   currentMatchday: number;
   totalMatchdays?: number;
-  onChange: (matchday: number) => void;
+  baseUrl?: string;
 }
 
 export function MatchdaySelector({
   currentMatchday,
   totalMatchdays = 38,
-  onChange,
+  baseUrl = "/fixture",
 }: MatchdaySelectorProps) {
+  const start = Math.max(1, Math.min(currentMatchday - 2, totalMatchdays - 4));
+  const days = Array.from({ length: Math.min(5, totalMatchdays) }, (_, i) => start + i);
+
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onChange(Math.max(1, currentMatchday - 1))}
-        disabled={currentMatchday <= 1}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
+      <Link href={`${baseUrl}?matchday=${Math.max(1, currentMatchday - 1)}`}>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={currentMatchday <= 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+      </Link>
       <div className="flex items-center gap-1">
-        {Array.from({ length: Math.min(5, totalMatchdays) }, (_, i) => {
-          const start = Math.max(1, Math.min(currentMatchday - 2, totalMatchdays - 4));
-          const day = start + i;
-          return (
+        {days.map((day) => (
+          <Link key={day} href={`${baseUrl}?matchday=${day}`}>
             <Button
-              key={day}
               variant={day === currentMatchday ? "default" : "ghost"}
               size="sm"
-              onClick={() => onChange(day)}
               className={cn(
                 "w-10",
                 day === currentMatchday && "bg-green-500 text-black hover:bg-green-400"
@@ -42,17 +43,18 @@ export function MatchdaySelector({
             >
               {day}
             </Button>
-          );
-        })}
+          </Link>
+        ))}
       </div>
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onChange(Math.min(totalMatchdays, currentMatchday + 1))}
-        disabled={currentMatchday >= totalMatchdays}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+      <Link href={`${baseUrl}?matchday=${Math.min(totalMatchdays, currentMatchday + 1)}`}>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={currentMatchday >= totalMatchdays}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </Link>
     </div>
   );
 }

@@ -174,7 +174,7 @@ export async function calculateAndStorePoints(): Promise<{
           },
         });
 
-        const totalPoints = userPredictions.reduce((sum, p) => sum + (p.points || 0), 0);
+        const totalPoints = userPredictions.reduce((sum: number, p: { points: number | null }) => sum + (p.points || 0), 0);
 
         await prisma.participation.update({
           where: { id: participation.id },

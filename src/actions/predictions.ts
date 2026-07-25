@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "./auth";
+import { isMatchLocked } from "@/lib/match-utils";
 
 export async function submitPrediction(formData: FormData) {
   const user = await getCurrentUser();
@@ -33,6 +34,10 @@ export async function submitPrediction(formData: FormData) {
 
   if (match.status !== "SCHEDULED") {
     return { error: "No se pueden cargar pronósticos para partidos ya iniciados" };
+  }
+
+  if (isMatchLocked(match.date, match.time)) {
+    return { error: "El pronóstico se bloquea 1 hora antes del inicio del partido" };
   }
 
   // Upsert prediction

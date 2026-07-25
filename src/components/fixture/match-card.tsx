@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { submitPrediction } from "@/actions/predictions";
+import { isMatchLocked } from "@/lib/match-utils";
 import { cn } from "@/lib/utils";
 import { Clock, CheckCircle2, Lock } from "lucide-react";
 
@@ -39,9 +40,10 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const isLocked = match.status !== "SCHEDULED";
   const isFinished = match.status === "FINISHED";
   const isLive = match.status === "LIVE";
+  const isTimeLocked = isMatchLocked(new Date(match.date), match.time ?? null);
+  const isLocked = match.status !== "SCHEDULED" || isTimeLocked;
 
   const matchDate = new Date(match.date);
   const dateStr = matchDate.toLocaleDateString("es-AR", {

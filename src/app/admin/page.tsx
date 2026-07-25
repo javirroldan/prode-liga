@@ -1,82 +1,74 @@
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ResultEntryForm } from "@/components/admin/result-entry-form";
 import { 
-  SyncMatchdayButton, 
-  SyncLiveButton, 
-  RecalculateButton 
-} from "@/components/admin/admin-actions";
-import { 
-  Database, 
-  RefreshCw, 
-  Calculator, 
   Users, 
   Trophy,
   AlertTriangle,
   CheckCircle2,
+  ClipboardList,
 } from "lucide-react";
 
-interface UserWithoutPrediction {
-  name: string;
-  nickname: string;
-}
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ matchday?: string }>;
+}) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-async function getUsersWithoutPrediction(matchday: number): Promise<UserWithoutPrediction[]> {
-  const tournament = await prisma.tournament.findFirst({
-    where: { isActive: true },
-  });
+  if (!user) redirect("/auth/login");
 
-  if (!tournament) return [];
+  const dbUser = await prisma.user.findUnique({ where: { supabaseId: user.id } });
+  if (!dbUser?.isAdmin) redirect("/dashboard");
 
-  const matches = await prisma.match.findMany({
-    where: { matchday, tournamentId: tournament.id },
-  });
+  const params = await searchParams;
+  const currentMatchday = parseInt(params.matchday || "1");
 
-  const matchIds = matches.map((m: { id: string }) => m.id);
-
-  const usersWithPrediction = await prisma.prediction.findMany({
-    where: {
-      matchId: { in: matchIds },
-    },
-    select: { userId: true },
-    distinct: ["userId"],
-  });
-
-  const userIdsWithPrediction = usersWithPrediction.map((p: { userId: string }) => p.userId);
-
-  const allParticipants = await prisma.participation.findMany({
-    where: { tournamentId: tournament.id },
-    include: {
-      user: {
-        select: {
-          name: true,
-          nickname: true,
-        },
-      },
-    },
-  });
-
-  return allParticipants
-    .filter((p: { userId: string }) => !userIdsWithPrediction.includes(p.userId))
-    .map((p: { user: UserWithoutPrediction }) => p.user);
-}
-
-export default async function AdminPage() {
   const [
     totalUsers,
     totalTournaments,
     totalMatches,
-    totalPredictions,
+    totalFinished,
     activeTournament,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.tournament.count(),
     prisma.match.count(),
-    prisma.prediction.count(),
+    prisma.match.count({ where: { status: "FINISHED" } }),
     prisma.tournament.findFirst({ where: { isActive: true } }),
   ]);
 
-  const currentMatchday = 1;
-  const usersWithoutPrediction = await getUsersWithoutPrediction(currentMatchday);
+  const matches = await prisma.match.findMany({
+    where: { matchday: currentMatchday },
+    orderBy: { date: "asc" },
+    include: {
+      predictions: {
+        include: {
+          user: { select: { nickname: true } },
+        },
+      },
+    },
+  });
+
+  const matchesForForm = matches.map((m) => ({
+    id: m.id,
+    homeTeam: m.homeTeam,
+    awayTeam: m.awayTeam,
+    homeGoals: m.homeGoals,
+    awayGoals: m.awayGoals,
+    status: m.status,
+    date: m.date,
+    time: m.time,
+    predictions: m.predictions.map((p) => ({
+      homeGoals: p.homeGoals,
+      awayGoals: p.awayGoals,
+      points: p.points,
+      user: { nickname: p.user.nickname },
+    })),
+  }));
 
   return (
     <div className="space-y-8">
@@ -111,11 +103,11 @@ export default async function AdminPage() {
         <Card className="border-green-500/20">
           <CardContent className="flex items-center gap-4 p-4">
             <div className="rounded-lg bg-green-500/10 p-3">
-              <Database className="h-6 w-6 text-green-400" />
+              <ClipboardList className="h-6 w-6 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{totalMatches}</p>
-              <p className="text-sm text-muted-foreground">Partidos</p>
+              <p className="text-2xl font-bold">{totalFinished}/{totalMatches}</p>
+              <p className="text-sm text-muted-foreground">Resultados cargados</p>
             </div>
           </CardContent>
         </Card>
@@ -125,88 +117,27 @@ export default async function AdminPage() {
               <CheckCircle2 className="h-6 w-6 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{totalPredictions}</p>
-              <p className="text-sm text-muted-foreground">Pronosticos</p>
+              <p className="text-2xl font-bold">{totalMatches - totalFinished}</p>
+              <p className="text-sm text-muted-foreground">Pendientes</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <RefreshCw className="h-5 w-5" />
-              Sincronizacion
-            </CardTitle>
-            <CardDescription>
-              Actualizar datos desde la API de futbol
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {activeTournament && (
-              <p className="text-sm text-muted-foreground">
-                Torneo activo: <span className="font-medium text-foreground">{activeTournament.name}</span>
-              </p>
-            )}
-            <SyncMatchdayButton matchday={1} />
-            <SyncLiveButton />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5" />
-              Calculo de puntos
-            </CardTitle>
-            <CardDescription>
-              Recalcular puntajes de todos los participantes
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Recalcula los puntos despues de corregir resultados o si hay inconsistencias.
-            </p>
-            <RecalculateButton />
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-400" />
-              Sin pronostico - Fecha {currentMatchday}
-            </CardTitle>
-            <CardDescription>
-              Usuarios que aun no cargaron sus predicciones
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {usersWithoutPrediction.length === 0 ? (
-              <div className="flex items-center gap-2 rounded-lg bg-green-500/10 p-4 text-green-400">
-                <CheckCircle2 className="h-5 w-5" />
-                Todos los participantes cargaron sus pronosticos
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {usersWithoutPrediction.map((user: UserWithoutPrediction, i: number) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-3"
-                  >
-                    <AlertTriangle className="h-4 w-4 text-yellow-400" />
-                    <div>
-                      <p className="font-medium">{user.nickname}</p>
-                      <p className="text-xs text-muted-foreground">{user.name}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ClipboardList className="h-5 w-5" />
+            Cargar Resultados - Fecha {currentMatchday}
+          </CardTitle>
+          <CardDescription>
+            Ingresá los goles de cada partido. Una vez guardado, no se puede modificar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResultEntryForm matches={matchesForForm} currentMatchday={currentMatchday} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

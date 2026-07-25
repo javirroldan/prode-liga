@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "./auth";
-import { syncFixtures, syncLiveScores, calculateAndStorePoints } from "@/services/sync";
+import { calculatePoints } from "@/services/scoring";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -104,4 +104,98 @@ export async function getUsersWithoutPrediction(matchday: number) {
   return allParticipants
     .filter((p) => !userIdsWithPrediction.includes(p.userId))
     .map((p) => p.user);
+}
+
+export async function getMatchdayResults(matchday: number) {
+  await requireAdmin();
+
+  return prisma.match.findMany({
+    where: { matchday },
+    orderBy: { date: "asc" },
+    include: {
+      predictions: {
+        include: {
+          user: {
+            select: { nickname: true },
+          },
+        },
+      },
+    },
+  });
+}
+
+export async function submitMatchResult(
+  matchId: string,
+  homeGoals: number,
+  awayGoals: number
+) {
+  const user = await requireAdmin();
+
+  const match = await prisma.match.findUnique({ where: { id: matchId } });
+  if (!match) return { error: "Partido no encontrado" };
+
+  if (match.status === "FINISHED") {
+    return { error: "Este partido ya tiene resultado cargado y no se puede modificar" };
+  }
+
+  if (homeGoals < 0 || awayGoals < 0) {
+    return { error: "Los goles no pueden ser negativos" };
+  }
+
+  // Update match with result
+  await prisma.match.update({
+    where: { id: matchId },
+    data: {
+      homeGoals,
+      awayGoals,
+      status: "FINISHED",
+    },
+  });
+
+  // Calculate points for all predictions on this match
+  const predictions = await prisma.prediction.findMany({
+    where: { matchId },
+  });
+
+  for (const pred of predictions) {
+    const points = calculatePoints(
+      { homeGoals: pred.homeGoals, awayGoals: pred.awayGoals },
+      { homeGoals, awayGoals }
+    );
+
+    await prisma.prediction.update({
+      where: { id: pred.id },
+      data: { points },
+    });
+  }
+
+  // Update total points for all participants in the tournament
+  await updateParticipantPoints(match.tournamentId);
+
+  revalidatePath("/admin");
+  revalidatePath("/ranking");
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+async function updateParticipantPoints(tournamentId: string) {
+  const participants = await prisma.participation.findMany({
+    where: { tournamentId },
+  });
+
+  for (const participant of participants) {
+    const result = await prisma.prediction.aggregate({
+      where: {
+        userId: participant.userId,
+        match: { tournamentId },
+        points: { not: null },
+      },
+      _sum: { points: true },
+    });
+
+    await prisma.participation.update({
+      where: { id: participant.id },
+      data: { totalPoints: result._sum.points || 0 },
+    });
+  }
 }

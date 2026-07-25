@@ -40,14 +40,32 @@ export async function register(formData: FormData) {
   }
 
   if (authData.user) {
-    await prisma.user.create({
-      data: {
-        supabaseId: authData.user.id,
-        name,
-        nickname,
-        email,
-      },
+    try {
+      await prisma.user.create({
+        data: {
+          supabaseId: authData.user.id,
+          name,
+          nickname,
+          email,
+        },
+      });
+    } catch (e) {
+      // If the user already exists in DB (e.g. from a previous attempt), just continue
+      console.error("Error creating user in DB:", e);
+    }
+  }
+
+  // If email confirmation is required, there's no session — try to sign in directly
+  if (!authData.session) {
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
+    if (signInError) {
+      return {
+        error: "Cuenta creada. Revisá tu email para confirmar tu cuenta, o contactá al administrador.",
+      };
+    }
   }
 
   redirect("/dashboard");

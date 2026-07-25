@@ -48,7 +48,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
     }
 
     startTransition(async () => {
-      const result = await submitMatchResult(matchId, match.homeGoals, match.awayGoals);
+      const result = await submitMatchResult(matchId, match.homeGoals!, match.awayGoals!);
       if (result?.error) {
         setMessage({ type: "error", text: result.error });
       } else {

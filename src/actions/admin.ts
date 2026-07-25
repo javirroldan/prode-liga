@@ -37,33 +37,6 @@ export async function createTournament(formData: FormData) {
   return { success: true, inviteCode };
 }
 
-export async function syncMatchday(matchday: number) {
-  await requireAdmin();
-
-  const result = await syncFixtures(matchday);
-  revalidatePath("/admin");
-  revalidatePath("/dashboard");
-  revalidatePath("/fixture");
-  return result;
-}
-
-export async function syncLive() {
-  await requireAdmin();
-
-  const result = await syncLiveScores();
-  revalidatePath("/dashboard");
-  return result;
-}
-
-export async function recalculatePoints() {
-  await requireAdmin();
-
-  const result = await calculateAndStorePoints();
-  revalidatePath("/admin");
-  revalidatePath("/ranking");
-  return result;
-}
-
 export async function getUsersWithoutPrediction(matchday: number) {
   await requireAdmin();
 

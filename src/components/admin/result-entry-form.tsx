@@ -43,7 +43,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
   const handleSubmit = (matchId: string) => {
     const match = localMatches.find((m) => m.id === matchId);
     if (!match || match.homeGoals === null || match.awayGoals === null) {
-      setMessage({ type: "error", text: "Cargá los goles de ambos equipos" });
+      setMessage({ type: "error", text: "Carga los goles de ambos equipos" });
       return;
     }
 
@@ -124,12 +124,12 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
             <Card
               key={match.id}
               className={`border ${
-                isFinished ? "border-green-500/30 bg-green-500/5" : "border-white/10"
-              }`}
+                isFinished ? "border-green-500/30 bg-green-500/5" : "border-white/10 bg-black/40"
+              } backdrop-blur-sm`}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-white/50">
                     {dateStr} {match.time && `- ${match.time}`}
                   </span>
                   {isFinished ? (
@@ -148,14 +148,14 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="flex-1 text-right font-medium text-sm">
+                  <span className="flex-1 text-right font-medium text-sm text-white">
                     {match.homeTeam}
                   </span>
 
                   {isFinished ? (
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-bold text-green-400">{match.homeGoals}</span>
-                      <span className="text-muted-foreground">-</span>
+                      <span className="text-white/30">-</span>
                       <span className="text-2xl font-bold text-green-400">{match.awayGoals}</span>
                     </div>
                   ) : (
@@ -166,23 +166,23 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                         max="20"
                         value={match.homeGoals ?? ""}
                         onChange={(e) => handleGoalsChange(match.id, "homeGoals", e.target.value)}
-                        className="w-16 text-center text-lg font-bold"
+                        className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
                         placeholder="-"
                       />
-                      <span className="text-muted-foreground">-</span>
+                      <span className="text-white/30">-</span>
                       <Input
                         type="number"
                         min="0"
                         max="20"
                         value={match.awayGoals ?? ""}
                         onChange={(e) => handleGoalsChange(match.id, "awayGoals", e.target.value)}
-                        className="w-16 text-center text-lg font-bold"
+                        className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
                         placeholder="-"
                       />
                     </div>
                   )}
 
-                  <span className="flex-1 text-left font-medium text-sm">
+                  <span className="flex-1 text-left font-medium text-sm text-white">
                     {match.awayTeam}
                   </span>
                 </div>
@@ -192,7 +192,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                     <Button
                       onClick={() => handleSubmit(match.id)}
                       disabled={isPending || match.homeGoals === null || match.awayGoals === null}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      className="flex-1"
                       size="sm"
                     >
                       <Save className="mr-2 h-4 w-4" />
@@ -212,8 +212,8 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                 )}
 
                 {isFinished && match.predictions.length > 0 && (
-                  <div className="mt-3 text-xs text-muted-foreground">
-                    {match.predictions.length} pronósticos cargados
+                  <div className="mt-3 text-xs text-white/50">
+                    {match.predictions.length} pronosticos cargados
                   </div>
                 )}
               </CardContent>

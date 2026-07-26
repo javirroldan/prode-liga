@@ -22,54 +22,58 @@ export default function RegisterPage() {
   );
 
   return (
-    <Card className="border-green-500/20 bg-card/80 backdrop-blur">
+    <Card className="border-white/10 bg-black/60 backdrop-blur-lg">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Crear cuenta</CardTitle>
-        <CardDescription>Registrate para jugar al prode</CardDescription>
+        <CardTitle className="text-2xl text-white">Crear cuenta</CardTitle>
+        <CardDescription className="text-white/50">Registrate para jugar al prode</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction} className="space-y-4">
           {state.error && (
-            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">
               {state.error}
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre completo</Label>
+            <Label htmlFor="name" className="text-white/70">Nombre completo</Label>
             <Input
               id="name"
               name="name"
               placeholder="Juan Perez"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="nickname">Nickname</Label>
+            <Label htmlFor="nickname" className="text-white/70">Nickname</Label>
             <Input
               id="nickname"
               name="nickname"
               placeholder="juanprode"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
               required
               minLength={3}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-white/70">Email</Label>
             <Input
               id="email"
               name="email"
               type="email"
               placeholder="tu@email.com"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Contrasena</Label>
+            <Label htmlFor="password" className="text-white/70">Contrasena</Label>
             <Input
               id="password"
               name="password"
               type="password"
               placeholder="Minimo 6 caracteres"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
               required
               minLength={6}
             />
@@ -77,9 +81,9 @@ export default function RegisterPage() {
           <Button type="submit" className="w-full" size="lg" disabled={pending}>
             {pending ? "Creando..." : "Crear cuenta"}
           </Button>
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-white/50">
             Ya tenes cuenta?{" "}
-            <Link href="/auth/login" className="text-green-400 hover:underline">
+            <Link href="/auth/login" className="text-blue-400 hover:underline">
               Inicia aca
             </Link>
           </p>

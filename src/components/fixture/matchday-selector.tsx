@@ -26,6 +26,7 @@ export function MatchdaySelector({
           variant="outline"
           size="icon"
           disabled={currentMatchday <= 1}
+          className="border-white/20 text-white hover:bg-white/10"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -38,7 +39,9 @@ export function MatchdaySelector({
               size="sm"
               className={cn(
                 "w-10",
-                day === currentMatchday && "bg-green-500 text-black hover:bg-green-400"
+                day === currentMatchday
+                  ? "bg-blue-500 text-white hover:bg-blue-400"
+                  : "text-white/50 hover:bg-white/10 hover:text-white"
               )}
             >
               {day}
@@ -51,6 +54,7 @@ export function MatchdaySelector({
           variant="outline"
           size="icon"
           disabled={currentMatchday >= totalMatchdays}
+          className="border-white/20 text-white hover:bg-white/10"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

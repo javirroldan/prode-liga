@@ -4,11 +4,10 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { submitPrediction } from "@/actions/predictions";
 import { isMatchLocked } from "@/lib/match-utils";
 import { cn } from "@/lib/utils";
-import { Clock, CheckCircle2, Lock } from "lucide-react";
+import { CheckCircle2, Lock, Minus } from "lucide-react";
 
 interface MatchCardProps {
   match: {
@@ -28,6 +27,38 @@ interface MatchCardProps {
     awayGoals: number;
     points?: number | null;
   } | null;
+}
+
+function PointsBadge({
+  points,
+  isFinished,
+}: {
+  points: number | null | undefined;
+  isFinished: boolean;
+}) {
+  if (!isFinished) {
+    return (
+      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/5 text-xs font-bold text-white/40">
+        -
+      </div>
+    );
+  }
+
+  const pts = points ?? 0;
+
+  return (
+    <div
+      className={cn(
+        "flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold",
+        pts >= 12 && "bg-yellow-500 text-black",
+        pts >= 5 && pts < 12 && "bg-blue-500 text-white",
+        pts >= 2 && pts < 5 && "bg-green-500 text-white",
+        pts === 0 && "bg-white/10 text-white/40"
+      )}
+    >
+      {pts > 0 ? `+${pts}` : pts}
+    </div>
+  );
 }
 
 export function MatchCard({ match, prediction }: MatchCardProps) {
@@ -52,6 +83,9 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
     month: "short",
   });
 
+  const gotPoints = isFinished && (prediction?.points ?? 0) > 0;
+  const gotZero = isFinished && (prediction?.points ?? 0) === 0 && prediction;
+
   async function handleSubmit() {
     if (saving || isLocked) return;
     setSaving(true);
@@ -70,59 +104,57 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
   }
 
   return (
-    <Card className={cn(
-      "transition-all duration-300",
-      isLocked && "opacity-75",
-      isLive && "border-red-500/50 shadow-red-500/10 shadow-lg",
-      isFinished && "border-green-500/30",
-      saved && "border-green-400/50"
-    )}>
-      <CardContent className="p-4">
-        {/* Status & Date */}
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {isLive && (
-              <Badge variant="destructive" className="animate-pulse gap-1">
-                <span className="h-2 w-2 rounded-full bg-red-500" />
-                EN VIVO
-              </Badge>
-            )}
-            {isFinished && (
-              <Badge variant="success" className="gap-1">
-                <CheckCircle2 className="h-3 w-3" />
-                FINALIZADO
-              </Badge>
-            )}
-            {isLocked && !isLive && !isFinished && (
-              <Badge variant="warning" className="gap-1">
-                <Lock className="h-3 w-3" />
-                BLOQUEADO
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            {dateStr} {match.time || ""}
-          </div>
-        </div>
+    <Card
+      className={cn(
+        "border-white/10 bg-black/40 backdrop-blur-sm transition-all duration-300",
+        gotPoints && "border-green-500/40 bg-green-500/5",
+        gotZero && "border-red-500/40 bg-red-500/5",
+        isLive && "border-red-500/50 shadow-lg shadow-red-500/10",
+        saved && "border-blue-400/50"
+      )}
+    >
+      <CardContent className="p-3">
+        <div className="flex items-center gap-3">
+          {/* Points badge */}
+          <PointsBadge points={prediction?.points} isFinished={isFinished} />
 
-        {/* Teams */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           {/* Home team */}
-          <div className="text-right">
-            <p className="font-semibold text-sm md:text-base">{match.homeTeam}</p>
+          <div className="flex-1 text-right">
+            <span className="text-xs font-semibold text-white/80 truncate block">
+              {match.homeTeam}
+            </span>
           </div>
 
-          {/* Score / Prediction */}
-          <div className="flex flex-col items-center gap-2">
+          {/* Score */}
+          <div className="flex items-center gap-2">
             {isFinished || isLive ? (
-              <div className="flex items-center gap-2 text-2xl font-bold">
-                <span className="min-w-[2ch] text-center">{match.homeGoals ?? "-"}</span>
-                <span className="text-muted-foreground">-</span>
-                <span className="min-w-[2ch] text-center">{match.awayGoals ?? "-"}</span>
+              <div
+                className={cn(
+                  "flex items-center gap-2 rounded-lg px-3 py-1.5",
+                  gotPoints && "bg-green-500/20",
+                  gotZero && "bg-red-500/20"
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-lg font-bold min-w-[1.5ch] text-center",
+                    gotPoints ? "text-green-400" : gotZero ? "text-red-400" : "text-white"
+                  )}
+                >
+                  {match.homeGoals ?? "-"}
+                </span>
+                <span className="text-sm font-bold text-white/30">-</span>
+                <span
+                  className={cn(
+                    "text-lg font-bold min-w-[1.5ch] text-center",
+                    gotPoints ? "text-green-400" : gotZero ? "text-red-400" : "text-white"
+                  )}
+                >
+                  {match.awayGoals ?? "-"}
+                </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Input
                   type="number"
                   min="0"
@@ -130,10 +162,10 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
                   value={homeGoals}
                   onChange={(e) => setHomeGoals(e.target.value)}
                   disabled={isLocked}
-                  className="h-12 w-14 text-center text-lg font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="h-8 w-10 text-center text-base font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none bg-white/10 border-white/20 text-white placeholder:text-white/30"
                   placeholder="0"
                 />
-                <span className="text-xl font-bold text-muted-foreground">-</span>
+                <Minus className="h-3 w-3 text-white/30" />
                 <Input
                   type="number"
                   min="0"
@@ -141,7 +173,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
                   value={awayGoals}
                   onChange={(e) => setAwayGoals(e.target.value)}
                   disabled={isLocked}
-                  className="h-12 w-14 text-center text-lg font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="h-8 w-10 text-center text-base font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none bg-white/10 border-white/20 text-white placeholder:text-white/30"
                   placeholder="0"
                 />
               </div>
@@ -149,31 +181,46 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
           </div>
 
           {/* Away team */}
-          <div className="text-left">
-            <p className="font-semibold text-sm md:text-base">{match.awayTeam}</p>
+          <div className="flex-1 text-left">
+            <span className="text-xs font-semibold text-white/80 truncate block">
+              {match.awayTeam}
+            </span>
           </div>
-        </div>
 
-        {/* Points / Save */}
-        <div className="mt-3 flex items-center justify-between">
-          {prediction?.points != null && (
-            <Badge variant={prediction.points >= 5 ? "success" : prediction.points > 0 ? "warning" : "secondary"}>
-              {prediction.points} puntos
-            </Badge>
-          )}
-          {!isLocked && (
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={saving || homeGoals === "" || awayGoals === ""}
-              className={cn(
-                "ml-auto transition-all",
-                saved && "bg-green-500 hover:bg-green-500"
-              )}
-            >
-              {saving ? "Guardando..." : saved ? "¡Guardado!" : prediction ? "Actualizar" : "Guardar"}
-            </Button>
-          )}
+          {/* Status / Action */}
+          <div className="w-24 flex justify-end">
+            {isFinished && (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-400">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Finalizado
+              </span>
+            )}
+            {isLive && (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                EN VIVO
+              </span>
+            )}
+            {!isFinished && !isLive && isLocked && (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-yellow-400">
+                <Lock className="h-3 w-3" />
+                Bloqueado
+              </span>
+            )}
+            {!isLocked && !isFinished && (
+              <Button
+                size="sm"
+                onClick={handleSubmit}
+                disabled={saving || homeGoals === "" || awayGoals === ""}
+                className={cn(
+                  "h-7 px-2 text-xs",
+                  saved && "bg-green-500 hover:bg-green-500"
+                )}
+              >
+                {saving ? "..." : saved ? "OK" : prediction ? "Update" : "Save"}
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

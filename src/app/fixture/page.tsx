@@ -27,9 +27,9 @@ export default async function FixturePage({
   if (!tournament) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Fixture</h1>
-        <Card>
-          <CardContent className="p-8 text-center text-muted-foreground">
+        <h1 className="text-3xl font-bold text-white">Fixture</h1>
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
+          <CardContent className="p-8 text-center text-white/50">
             No hay torneos activos. Unite a uno desde el dashboard.
           </CardContent>
         </Card>
@@ -86,15 +86,15 @@ export default async function FixturePage({
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Fixture</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold text-white">Fixture</h1>
+        <p className="text-white/50">
           {tournament.name} - Fecha {currentMatchday}
         </p>
       </div>
 
       {/* Stats */}
       <div className="flex flex-wrap gap-3">
-        <Badge variant="secondary" className="gap-1">
+        <Badge variant="secondary" className="gap-1 bg-white/10 text-white/70 border-white/10">
           <Calendar className="h-3 w-3" />
           {totalMatches} partidos
         </Badge>
@@ -107,7 +107,7 @@ export default async function FixturePage({
 
       {/* Matchday Selector */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-semibold">Fecha {currentMatchday}</h2>
+        <h2 className="text-xl font-semibold text-white">Fecha {currentMatchday}</h2>
         <MatchdaySelector currentMatchday={currentMatchday} totalMatchdays={totalMatchdays} baseUrl="/fixture" />
       </div>
 
@@ -119,8 +119,8 @@ export default async function FixturePage({
             href={`/fixture?matchday=${currentMatchday}&status=${status}`}
             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               statusFilter === status
-                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                : "bg-secondary text-muted-foreground hover:text-foreground border border-transparent"
+                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                : "bg-white/5 text-white/50 hover:text-white border border-white/10"
             }`}
           >
             {status === "all"
@@ -135,8 +135,8 @@ export default async function FixturePage({
       {/* Matches Grid */}
       <div className="grid gap-4 md:grid-cols-2">
         {matches.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="p-8 text-center text-muted-foreground">
+          <Card className="col-span-full border-white/10 bg-black/40 backdrop-blur-sm">
+            <CardContent className="p-8 text-center text-white/50">
               No hay partidos para esta fecha
             </CardContent>
           </Card>

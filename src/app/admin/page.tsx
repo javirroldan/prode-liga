@@ -73,65 +73,65 @@ export default async function AdminPage({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold">Panel de Administracion</h1>
-        <p className="text-muted-foreground">Gestiona el prode de la Liga Profesional</p>
+        <h1 className="text-3xl font-bold text-white">Panel de Administracion</h1>
+        <p className="text-white/50">Gestiona el prode de la Liga Profesional</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-green-500/20">
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
           <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-lg bg-green-500/10 p-3">
-              <Users className="h-6 w-6 text-green-400" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <Users className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{totalUsers}</p>
-              <p className="text-sm text-muted-foreground">Usuarios</p>
+              <p className="text-2xl font-bold text-white">{totalUsers}</p>
+              <p className="text-sm text-white/50">Usuarios</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-green-500/20">
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
           <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-lg bg-green-500/10 p-3">
-              <Trophy className="h-6 w-6 text-green-400" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <Trophy className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{totalTournaments}</p>
-              <p className="text-sm text-muted-foreground">Torneos</p>
+              <p className="text-2xl font-bold text-white">{totalTournaments}</p>
+              <p className="text-sm text-white/50">Torneos</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-green-500/20">
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
           <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-lg bg-green-500/10 p-3">
-              <ClipboardList className="h-6 w-6 text-green-400" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <ClipboardList className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{totalFinished}/{totalMatches}</p>
-              <p className="text-sm text-muted-foreground">Resultados cargados</p>
+              <p className="text-2xl font-bold text-white">{totalFinished}/{totalMatches}</p>
+              <p className="text-sm text-white/50">Resultados cargados</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-green-500/20">
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
           <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-lg bg-green-500/10 p-3">
-              <CheckCircle2 className="h-6 w-6 text-green-400" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <CheckCircle2 className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{totalMatches - totalFinished}</p>
-              <p className="text-sm text-muted-foreground">Pendientes</p>
+              <p className="text-2xl font-bold text-white">{totalMatches - totalFinished}</p>
+              <p className="text-sm text-white/50">Pendientes</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-white">
             <ClipboardList className="h-5 w-5" />
             Cargar Resultados - Fecha {currentMatchday}
           </CardTitle>
-          <CardDescription>
-            Ingresá los goles de cada partido. Una vez guardado, no se puede modificar.
+          <CardDescription className="text-white/50">
+            Ingresa los goles de cada partido. Una vez guardado, no se puede modificar.
           </CardDescription>
         </CardHeader>
         <CardContent>

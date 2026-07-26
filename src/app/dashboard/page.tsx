@@ -55,10 +55,10 @@ export default async function DashboardPage({
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">
-          Hola, <span className="text-green-400">{user.nickname}</span>
+        <h1 className="text-3xl font-bold text-white">
+          Hola, <span className="text-blue-400">{user.nickname}</span>
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-white/50">
           {activeTournamentId
             ? `Fecha ${currentMatchday} de la Liga Profesional Argentina`
             : "Unite a un torneo para comenzar"}
@@ -79,8 +79,8 @@ export default async function DashboardPage({
                     variant={isActive ? "default" : "secondary"}
                     className={`cursor-pointer px-3 py-1.5 text-sm transition-colors ${
                       isActive
-                        ? "bg-green-500/20 text-green-400 border-green-500/30"
-                        : "hover:bg-secondary/80"
+                        ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                        : "bg-white/5 text-white/50 hover:bg-white/10 border-white/10"
                     }`}
                   >
                     {t.tournament.name}
@@ -92,7 +92,7 @@ export default async function DashboardPage({
                   <button
                     type="submit"
                     title={`Salir de ${t.tournament.name}`}
-                    className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    className="rounded-md p-1 text-white/30 hover:bg-red-500/10 hover:text-red-400 transition-colors"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                   </button>
@@ -106,38 +106,38 @@ export default async function DashboardPage({
       {/* Stats */}
       {activeTournamentId && (
         <div className="grid gap-4 sm:grid-cols-3">
-          <Card className="border-green-500/20">
+          <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
             <CardContent className="flex items-center gap-4 p-4">
-              <div className="rounded-lg bg-green-500/10 p-3">
-                <Target className="h-6 w-6 text-green-400" />
+              <div className="rounded-lg bg-blue-500/10 p-3">
+                <Target className="h-6 w-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl font-bold text-white">
                   {predictionsCount}/{matches.length}
                 </p>
-                <p className="text-sm text-muted-foreground">Pronósticos cargados</p>
+                <p className="text-sm text-white/50">Pronosticos cargados</p>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-green-500/20">
+          <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
             <CardContent className="flex items-center gap-4 p-4">
-              <div className="rounded-lg bg-green-500/10 p-3">
-                <Trophy className="h-6 w-6 text-green-400" />
+              <div className="rounded-lg bg-blue-500/10 p-3">
+                <Trophy className="h-6 w-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{tournaments.length}</p>
-                <p className="text-sm text-muted-foreground">Torneos activos</p>
+                <p className="text-2xl font-bold text-white">{tournaments.length}</p>
+                <p className="text-sm text-white/50">Torneos activos</p>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-green-500/20">
+          <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
             <CardContent className="flex items-center gap-4 p-4">
-              <div className="rounded-lg bg-green-500/10 p-3">
-                <TrendingUp className="h-6 w-6 text-green-400" />
+              <div className="rounded-lg bg-blue-500/10 p-3">
+                <TrendingUp className="h-6 w-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{totalPoints}</p>
-                <p className="text-sm text-muted-foreground">Puntos totales</p>
+                <p className="text-2xl font-bold text-white">{totalPoints}</p>
+                <p className="text-sm text-white/50">Puntos totales</p>
               </div>
             </CardContent>
           </Card>
@@ -148,7 +148,7 @@ export default async function DashboardPage({
       {activeTournamentId && (
         <div>
           <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-xl font-semibold">Fecha {currentMatchday}</h2>
+            <h2 className="text-xl font-semibold text-white">Fecha {currentMatchday}</h2>
             <MatchdaySelector
               currentMatchday={currentMatchday}
               baseUrl={`/dashboard?tournamentId=${activeTournamentId}`}
@@ -157,8 +157,8 @@ export default async function DashboardPage({
 
           <div className="grid gap-4 md:grid-cols-2">
             {matches.length === 0 ? (
-              <Card className="col-span-full">
-                <CardContent className="p-8 text-center text-muted-foreground">
+              <Card className="col-span-full border-white/10 bg-black/40 backdrop-blur-sm">
+                <CardContent className="p-8 text-center text-white/50">
                   No hay partidos para esta fecha
                 </CardContent>
               </Card>
@@ -190,15 +190,15 @@ export default async function DashboardPage({
       )}
 
       {/* Join Tournament - always visible */}
-      <Card className="border-green-500/20">
+      <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="text-white">
             {tournaments.length === 0
               ? "Unite a un torneo"
               : "Unirse a otro torneo"}
           </CardTitle>
-          <CardDescription>
-            Ingresá el código de invitación de tu grupo
+          <CardDescription className="text-white/50">
+            Ingresa el codigo de invitacion de tu grupo
           </CardDescription>
         </CardHeader>
         <CardContent>

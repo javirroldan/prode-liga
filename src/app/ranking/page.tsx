@@ -1,33 +1,23 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/actions/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import { redirect } from "next/navigation";
 import { Trophy, Medal, TrendingUp, Target } from "lucide-react";
 
-function getPositionIcon(position: number) {
-  if (position === 1) return <Trophy className="h-5 w-5 text-yellow-400" />;
-  if (position === 2) return <Medal className="h-5 w-5 text-gray-300" />;
-  if (position === 3) return <Medal className="h-5 w-5 text-amber-600" />;
-  return <span className="text-sm font-bold text-muted-foreground w-5 text-center">{position}</span>;
+function getPositionStyle(position: number) {
+  if (position === 1) return { bg: "bg-yellow-500", text: "text-yellow-500", ring: "ring-yellow-500/30" };
+  if (position === 2) return { bg: "bg-slate-300", text: "text-slate-300", ring: "ring-slate-300/30" };
+  if (position === 3) return { bg: "bg-amber-600", text: "text-amber-600", ring: "ring-amber-600/30" };
+  return { bg: "bg-white/10", text: "text-white/50", ring: "" };
 }
 
 function getPositionLabel(points: number): string {
   if (points >= 100) return "ProdeMaster";
   if (points >= 60) return "Experto";
-  if (points >= 30) return "Fanático";
+  if (points >= 30) return "Fanatico";
   if (points >= 10) return "Entusiasta";
   return "Debutante";
-}
-
-function getPositionColor(points: number): string {
-  if (points >= 100) return "text-yellow-400";
-  if (points >= 60) return "text-green-400";
-  if (points >= 30) return "text-blue-400";
-  if (points >= 10) return "text-purple-400";
-  return "text-muted-foreground";
 }
 
 export default async function RankingPage() {
@@ -41,9 +31,9 @@ export default async function RankingPage() {
   if (!tournament) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Ranking</h1>
-        <Card>
-          <CardContent className="p-8 text-center text-muted-foreground">
+        <h1 className="text-3xl font-bold text-white">Ranking</h1>
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
+          <CardContent className="p-8 text-center text-white/50">
             No hay torneos activos. Unite a uno desde el dashboard.
           </CardContent>
         </Card>
@@ -78,27 +68,29 @@ export default async function RankingPage() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Ranking</h1>
-        <p className="text-muted-foreground">{tournament.name}</p>
+        <h1 className="text-3xl font-bold text-white">Ranking</h1>
+        <p className="text-white/50">{tournament.name}</p>
       </div>
 
+      {/* User position card */}
       {userParticipation && (
-        <Card className="border-green-500/30 bg-gradient-to-br from-green-500/5 to-transparent">
+        <Card className="border-blue-500/30 bg-blue-500/10 backdrop-blur-sm">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="rounded-full bg-green-500/10 p-3">
-                <Target className="h-6 w-6 text-green-400" />
+              <div className="rounded-full bg-blue-500/20 p-3">
+                <Target className="h-6 w-6 text-blue-400" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-muted-foreground">Tu posicion</p>
-                <p className="text-2xl font-bold">
+                <p className="text-sm text-white/50">Tu posicion</p>
+                <p className="text-2xl font-bold text-white">
                   {userPosition > 0 ? `#${userPosition}` : "-"} / {totalParticipants}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Tus puntos</p>
-                <p className="text-2xl font-bold text-green-400">
+                <p className="text-sm text-white/50">Tus puntos</p>
+                <p className="text-2xl font-bold text-blue-400">
                   {userParticipation.totalPoints}
                 </p>
               </div>
@@ -107,95 +99,117 @@ export default async function RankingPage() {
         </Card>
       )}
 
+      {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-green-500/20">
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
           <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-lg bg-green-500/10 p-3">
-              <Trophy className="h-6 w-6 text-green-400" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <Trophy className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{totalParticipants}</p>
-              <p className="text-sm text-muted-foreground">Participantes</p>
+              <p className="text-2xl font-bold text-white">{totalParticipants}</p>
+              <p className="text-sm text-white/50">Participantes</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-green-500/20">
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
           <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-lg bg-green-500/10 p-3">
-              <TrendingUp className="h-6 w-6 text-green-400" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <TrendingUp className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{averagePoints}</p>
-              <p className="text-sm text-muted-foreground">Promedio puntos</p>
+              <p className="text-2xl font-bold text-white">{averagePoints}</p>
+              <p className="text-sm text-white/50">Promedio puntos</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-green-500/20">
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
           <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-lg bg-green-500/10 p-3">
-              <Medal className="h-6 w-6 text-green-400" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <Medal className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-bold text-white">
                 {rankings[0]?.user.nickname || "-"}
               </p>
-              <p className="text-sm text-muted-foreground">Lider actual</p>
+              <p className="text-sm text-white/50">Lider actual</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      {/* Rankings table */}
+      <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle>Tabla de posiciones</CardTitle>
+          <CardTitle className="text-white">Tabla de posiciones</CardTitle>
         </CardHeader>
         <CardContent>
           {rankings.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
+            <p className="text-center text-white/50 py-8">
               No hay participantes en este torneo
             </p>
           ) : (
             <div className="space-y-2">
-              {rankings.map((rank: { id: string; userId: string; totalPoints: number; user: { nickname: string; name: string; avatar: string | null } }, index: number) => (
-                <div key={rank.id}>
+              {rankings.map((rank: { id: string; userId: string; totalPoints: number; user: { nickname: string; name: string; avatar: string | null } }, index: number) => {
+                const posStyle = getPositionStyle(index + 1);
+                const isCurrentUser = rank.userId === user.id;
+
+                return (
                   <div
-                    className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${
-                      rank.userId === user.id
-                        ? "bg-green-500/10 border border-green-500/20"
-                        : "hover:bg-secondary/50"
-                    }`}
+                    key={rank.id}
+                    className={cn(
+                      "flex items-center gap-3 rounded-xl p-3 transition-all",
+                      isCurrentUser
+                        ? "bg-blue-500/10 border border-blue-500/30"
+                        : "bg-white/5 hover:bg-white/10"
+                    )}
                   >
-                    <div className="w-8 flex justify-center">
-                      {getPositionIcon(index + 1)}
+                    {/* Position number */}
+                    <div
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold",
+                        index < 3 ? posStyle.bg + " text-black" : posStyle.bg + " " + posStyle.text
+                      )}
+                    >
+                      {index + 1}
                     </div>
-                    <Avatar className="h-9 w-9">
-                      <AvatarFallback className="bg-green-500/10 text-green-400 text-sm font-bold">
+
+                    {/* Avatar */}
+                    <Avatar className="h-10 w-10 border-2 border-white/10">
+                      <AvatarFallback className="bg-blue-500/20 text-blue-400 text-sm font-bold">
                         {rank.user.nickname.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
+
+                    {/* Name */}
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
+                      <p className="font-semibold text-white truncate">
                         {rank.user.nickname}
-                        {rank.userId === user.id && (
-                          <span className="ml-2 text-xs text-green-400">(vos)</span>
+                        {isCurrentUser && (
+                          <span className="ml-2 text-xs text-blue-400">(vos)</span>
                         )}
                       </p>
-                      <p className={`text-xs ${getPositionColor(rank.totalPoints)}`}>
+                      <p className="text-xs text-white/40">
                         {getPositionLabel(rank.totalPoints)}
                       </p>
                     </div>
+
+                    {/* Points */}
                     <div className="text-right">
-                      <p className="text-lg font-bold">{rank.totalPoints}</p>
-                      <p className="text-xs text-muted-foreground">pts</p>
+                      <p className="text-lg font-bold text-white">{rank.totalPoints}</p>
+                      <p className="text-xs text-white/40">pts</p>
                     </div>
                   </div>
-                  {index < rankings.length - 1 && <Separator className="my-1" />}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
       </Card>
     </div>
   );
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
 }

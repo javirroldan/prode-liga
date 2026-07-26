@@ -189,7 +189,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
             {dateStr} {match.time || ""}
           </span>
           {(isFinished || isLive) && prediction && (
-            <span className="text-white/30">
+            <span className="text-yellow-200/70">
               (vos: {prediction.homeGoals} - {prediction.awayGoals})
             </span>
           )}

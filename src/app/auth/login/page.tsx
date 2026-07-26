@@ -55,6 +55,11 @@ export default function LoginPage() {
               className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
               required
             />
+            <div className="text-right">
+              <Link href="/auth/forgot-password" className="text-xs text-blue-400 hover:underline">
+                Olvidaste tu contraseña?
+              </Link>
+            </div>
           </div>
           <Button type="submit" className="w-full" size="lg" disabled={pending}>
             {pending ? "Ingresando..." : "Ingresar"}

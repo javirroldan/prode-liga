@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResultEntryForm } from "@/components/admin/result-entry-form";
+import { CreateTournamentForm } from "@/components/admin/create-tournament-form";
 import { 
   Users, 
   Trophy,
@@ -123,6 +124,8 @@ export default async function AdminPage({
           </CardContent>
         </Card>
       </div>
+
+      <CreateTournamentForm />
 
       <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
         <CardHeader>

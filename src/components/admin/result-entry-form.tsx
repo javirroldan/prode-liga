@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { submitMatchResult } from "@/actions/admin";
+import { submitMatchResult, setMatchStatus } from "@/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MatchdaySelector } from "@/components/fixture/matchday-selector";
-import { CheckCircle2, Lock, Save, AlertCircle } from "lucide-react";
+import { CheckCircle2, Lock, Save, AlertCircle, Radio } from "lucide-react";
 
 interface Match {
   id: string;
@@ -64,6 +64,30 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
     });
   };
 
+  const handleToggleLive = (matchId: string) => {
+    const match = localMatches.find((m) => m.id === matchId);
+    if (!match) return;
+
+    const newStatus = match.status === "LIVE" ? "SCHEDULED" : "LIVE";
+
+    startTransition(async () => {
+      const result = await setMatchStatus(matchId, newStatus);
+      if (result?.error) {
+        setMessage({ type: "error", text: result.error });
+      } else {
+        setMessage({
+          type: "success",
+          text: newStatus === "LIVE" ? "Partido marcado como en vivo" : "Partido vuelto a pendiente",
+        });
+        setLocalMatches((prev) =>
+          prev.map((m) =>
+            m.id === matchId ? { ...m, status: newStatus } : m
+          )
+        );
+      }
+    });
+  };
+
   return (
     <div className="space-y-4">
       <MatchdaySelector currentMatchday={currentMatchday} baseUrl="/admin" />
@@ -88,6 +112,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
       <div className="grid gap-4 md:grid-cols-2">
         {localMatches.map((match) => {
           const isFinished = match.status === "FINISHED";
+          const isLive = match.status === "LIVE";
           const matchDate = new Date(match.date);
           const dateStr = matchDate.toLocaleDateString("es-AR", {
             weekday: "short",
@@ -110,6 +135,10 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                   {isFinished ? (
                     <Badge variant="outline" className="border-green-500/50 text-green-400 text-xs">
                       <Lock className="mr-1 h-3 w-3" /> Finalizado
+                    </Badge>
+                  ) : isLive ? (
+                    <Badge variant="outline" className="border-red-500/50 text-red-400 text-xs animate-pulse">
+                      <Radio className="mr-1 h-3 w-3" /> En vivo
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="border-yellow-500/50 text-yellow-400 text-xs">
@@ -159,15 +188,27 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                 </div>
 
                 {!isFinished && (
-                  <Button
-                    onClick={() => handleSubmit(match.id)}
-                    disabled={isPending || match.homeGoals === null || match.awayGoals === null}
-                    className="w-full mt-3 bg-green-600 hover:bg-green-700"
-                    size="sm"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    {isPending ? "Guardando..." : "Guardar resultado"}
-                  </Button>
+                  <div className="mt-3 flex gap-2">
+                    <Button
+                      onClick={() => handleSubmit(match.id)}
+                      disabled={isPending || match.homeGoals === null || match.awayGoals === null}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      size="sm"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {isPending ? "Guardando..." : "Guardar resultado"}
+                    </Button>
+                    <Button
+                      onClick={() => handleToggleLive(match.id)}
+                      disabled={isPending}
+                      variant={isLive ? "destructive" : "outline"}
+                      size="sm"
+                      className={isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}
+                    >
+                      <Radio className="mr-1 h-4 w-4" />
+                      {isLive ? "Quitar en vivo" : "En vivo"}
+                    </Button>
+                  </div>
                 )}
 
                 {isFinished && match.predictions.length > 0 && (

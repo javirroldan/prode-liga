@@ -97,6 +97,26 @@ export async function getMatchdayResults(matchday: number) {
   });
 }
 
+export async function setMatchStatus(matchId: string, status: "SCHEDULED" | "LIVE") {
+  await requireAdmin();
+
+  const match = await prisma.match.findUnique({ where: { id: matchId } });
+  if (!match) return { error: "Partido no encontrado" };
+
+  if (match.status === "FINISHED") {
+    return { error: "No se puede cambiar el estado de un partido finalizado" };
+  }
+
+  await prisma.match.update({
+    where: { id: matchId },
+    data: { status },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/fixture");
+  return { success: true };
+}
+
 export async function submitMatchResult(
   matchId: string,
   homeGoals: number,

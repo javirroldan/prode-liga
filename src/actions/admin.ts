@@ -103,17 +103,28 @@ export async function setMatchStatus(matchId: string, status: "SCHEDULED" | "LIV
   const match = await prisma.match.findUnique({ where: { id: matchId } });
   if (!match) return { error: "Partido no encontrado" };
 
-  if (match.status === "FINISHED") {
-    return { error: "No se puede cambiar el estado de un partido finalizado" };
-  }
+  const wasFinished = match.status === "FINISHED";
 
   await prisma.match.update({
     where: { id: matchId },
-    data: { status },
+    data: { status, homeGoals: null, awayGoals: null },
   });
+
+  if (wasFinished) {
+    const predictions = await prisma.prediction.findMany({ where: { matchId } });
+    for (const pred of predictions) {
+      await prisma.prediction.update({
+        where: { id: pred.id },
+        data: { points: null },
+      });
+    }
+    await updateParticipantPoints(match.tournamentId);
+  }
 
   revalidatePath("/admin");
   revalidatePath("/fixture");
+  revalidatePath("/ranking");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 

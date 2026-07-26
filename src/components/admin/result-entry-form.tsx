@@ -68,6 +68,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
     const match = localMatches.find((m) => m.id === matchId);
     if (!match) return;
 
+    const wasFinished = match.status === "FINISHED";
     const newStatus = match.status === "LIVE" ? "SCHEDULED" : "LIVE";
 
     startTransition(async () => {
@@ -77,11 +78,15 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
       } else {
         setMessage({
           type: "success",
-          text: newStatus === "LIVE" ? "Partido marcado como en vivo" : "Partido vuelto a pendiente",
+          text: wasFinished
+            ? "Partido reabierto, resultado y puntos reseteados"
+            : newStatus === "LIVE"
+              ? "Partido marcado como en vivo"
+              : "Partido vuelto a pendiente",
         });
         setLocalMatches((prev) =>
           prev.map((m) =>
-            m.id === matchId ? { ...m, status: newStatus } : m
+            m.id === matchId ? { ...m, status: newStatus, homeGoals: null, awayGoals: null } : m
           )
         );
       }
@@ -198,7 +203,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                     className={isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}
                   >
                     <Radio className="mr-1 h-4 w-4" />
-                    {isLive ? "Quitar en vivo" : "En vivo"}
+                    {isFinished ? "Reabrir partido" : isLive ? "Quitar en vivo" : "En vivo"}
                   </Button>
                 </div>
 

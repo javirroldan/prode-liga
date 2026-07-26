@@ -128,6 +128,34 @@ export async function setMatchStatus(matchId: string, status: "SCHEDULED" | "LIV
   return { success: true };
 }
 
+export async function updateLiveScore(
+  matchId: string,
+  homeGoals: number,
+  awayGoals: number
+) {
+  await requireAdmin();
+
+  const match = await prisma.match.findUnique({ where: { id: matchId } });
+  if (!match) return { error: "Partido no encontrado" };
+
+  if (match.status !== "LIVE") {
+    return { error: "Solo se pueden cargar parciales en partidos en vivo" };
+  }
+
+  if (homeGoals < 0 || awayGoals < 0) {
+    return { error: "Los goles no pueden ser negativos" };
+  }
+
+  await prisma.match.update({
+    where: { id: matchId },
+    data: { homeGoals, awayGoals },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/fixture");
+  return { success: true };
+}
+
 export async function submitMatchResult(
   matchId: string,
   homeGoals: number,

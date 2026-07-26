@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { submitMatchResult, setMatchStatus } from "@/actions/admin";
+import { submitMatchResult, setMatchStatus, updateLiveScore } from "@/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -89,6 +89,23 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
             m.id === matchId ? { ...m, status: newStatus, homeGoals: null, awayGoals: null } : m
           )
         );
+      }
+    });
+  };
+
+  const handleUpdateLive = (matchId: string) => {
+    const match = localMatches.find((m) => m.id === matchId);
+    if (!match || match.homeGoals === null || match.awayGoals === null) {
+      setMessage({ type: "error", text: "Carga los goles de ambos equipos" });
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await updateLiveScore(matchId, match.homeGoals!, match.awayGoals!);
+      if (result?.error) {
+        setMessage({ type: "error", text: result.error });
+      } else {
+        setMessage({ type: "success", text: "Parcial actualizado" });
       }
     });
   };
@@ -185,16 +202,39 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                 </div>
 
                 <div className="mt-3 flex gap-2">
-                  <Button
-                    onClick={() => handleSubmit(match.id)}
-                    disabled={isPending || match.homeGoals === null || match.awayGoals === null}
-                    className="flex-1"
-                    size="sm"
-                    variant={isFinished ? "outline" : "default"}
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    {isPending ? "Guardando..." : isFinished ? "Corregir resultado" : "Guardar resultado"}
-                  </Button>
+                  {isLive ? (
+                    <>
+                      <Button
+                        onClick={() => handleUpdateLive(match.id)}
+                        disabled={isPending || match.homeGoals === null || match.awayGoals === null}
+                        className="flex-1"
+                        size="sm"
+                        variant="outline"
+                      >
+                        <Save className="mr-2 h-4 w-4" />
+                        {isPending ? "Guardando..." : "Actualizar parcial"}
+                      </Button>
+                      <Button
+                        onClick={() => handleSubmit(match.id)}
+                        disabled={isPending || match.homeGoals === null || match.awayGoals === null}
+                        size="sm"
+                      >
+                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                        Finalizar
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => handleSubmit(match.id)}
+                      disabled={isPending || match.homeGoals === null || match.awayGoals === null}
+                      className="flex-1"
+                      size="sm"
+                      variant={isFinished ? "outline" : "default"}
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {isPending ? "Guardando..." : isFinished ? "Corregir resultado" : "Guardar resultado"}
+                    </Button>
+                  )}
                   <Button
                     onClick={() => handleToggleLive(match.id)}
                     disabled={isPending}

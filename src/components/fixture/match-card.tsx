@@ -76,6 +76,13 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
   const isTimeLocked = isMatchLocked(new Date(match.date), match.time ?? null);
   const isLocked = match.status !== "SCHEDULED" || isTimeLocked;
 
+  const matchDate = new Date(match.date);
+  const dateStr = matchDate.toLocaleDateString("es-AR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
   const gotPoints = isFinished && (prediction?.points ?? 0) > 0;
   const gotZero = isFinished && (prediction?.points ?? 0) === 0 && prediction;
 
@@ -177,39 +184,44 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
           </div>
         </div>
 
-        {/* Row 2: Status / Action */}
-        <div className="flex justify-center">
-          {isFinished && (
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-400">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Finalizado
-            </span>
-          )}
-          {isLive && (
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-              EN VIVO
-            </span>
-          )}
-          {!isFinished && !isLive && isLocked && (
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-yellow-400">
-              <Lock className="h-3 w-3" />
-              Bloqueado
-            </span>
-          )}
-          {!isLocked && !isFinished && (
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={saving || homeGoals === "" || awayGoals === ""}
-              className={cn(
-                "h-7 px-3 text-xs",
-                saved && "bg-green-500 hover:bg-green-500"
-              )}
-            >
-              {saving ? "..." : saved ? "OK" : prediction ? "Update" : "Save"}
-            </Button>
-          )}
+        {/* Row 2: Date + Status / Action */}
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-white/40">
+            {dateStr} {match.time || ""}
+          </span>
+          <div>
+            {isFinished && (
+              <span className="inline-flex items-center gap-1 font-semibold text-green-400">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Finalizado
+              </span>
+            )}
+            {isLive && (
+              <span className="inline-flex items-center gap-1 font-semibold text-red-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                EN VIVO
+              </span>
+            )}
+            {!isFinished && !isLive && isLocked && (
+              <span className="inline-flex items-center gap-1 font-semibold text-yellow-400">
+                <Lock className="h-3 w-3" />
+                Bloqueado
+              </span>
+            )}
+            {!isLocked && !isFinished && (
+              <Button
+                size="sm"
+                onClick={handleSubmit}
+                disabled={saving || homeGoals === "" || awayGoals === ""}
+                className={cn(
+                  "h-7 px-3 text-xs",
+                  saved && "bg-green-500 hover:bg-green-500"
+                )}
+              >
+                {saving ? "Guardando..." : saved ? "Guardado" : prediction ? "Actualizar" : "Guardar"}
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -39,10 +39,10 @@ export function calculatePoints(prediction: Prediction, result: MatchResult): nu
 
   // Correct goals for one team = 2 points
   if (predHome === resHome && predAway !== resAway) {
-    points = Math.max(points, 2);
+    points += 2;
   }
   if (predAway === resAway && predHome !== resHome) {
-    points = Math.max(points, 2);
+    points += 2;
   }
 
   // Never exceed 12

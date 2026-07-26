@@ -141,10 +141,10 @@ export async function calculateAndStorePoints(): Promise<{
 
             // Correct goals for one team
             if (prediction.homeGoals === match.homeGoals && prediction.awayGoals !== match.awayGoals) {
-              points = Math.max(points, 2);
+              points += 2;
             }
             if (prediction.awayGoals === match.awayGoals && prediction.homeGoals !== match.homeGoals) {
-              points = Math.max(points, 2);
+              points += 2;
             }
 
             points = Math.min(points, 12);

@@ -29,6 +29,11 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body className={inter.className}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js')})}`,
+          }}
+        />
         <div className="min-h-screen">
           {children}
         </div>

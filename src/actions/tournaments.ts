@@ -64,6 +64,38 @@ export async function getTournamentRanking(tournamentId: string) {
   });
 }
 
+export async function leaveTournament(tournamentId: string) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: "Debés iniciar sesión" };
+  }
+
+  const participation = await prisma.participation.findUnique({
+    where: {
+      userId_tournamentId: {
+        userId: user.id,
+        tournamentId,
+      },
+    },
+  });
+
+  if (!participation) {
+    return { error: "No estás participando en este torneo" };
+  }
+
+  await prisma.participation.delete({
+    where: { id: participation.id },
+  });
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+export async function leaveTournamentAction(formData: FormData) {
+  const tournamentId = formData.get("tournamentId") as string;
+  await leaveTournament(tournamentId);
+}
+
 export async function getUserTournaments() {
   const user = await getCurrentUser();
   if (!user) return [];
@@ -73,5 +105,6 @@ export async function getUserTournaments() {
     include: {
       tournament: true,
     },
+    orderBy: { joinedAt: "asc" },
   });
 }

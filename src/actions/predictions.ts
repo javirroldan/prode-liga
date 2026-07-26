@@ -89,12 +89,17 @@ export async function getUserPredictions(matchday?: number) {
   });
 }
 
-export async function getMatchdayPredictions(matchday: number) {
+export async function getMatchdayPredictions(matchday: number, tournamentId?: string) {
   const user = await getCurrentUser();
   if (!user) return [];
 
+  const where: any = { matchday };
+  if (tournamentId) {
+    where.tournamentId = tournamentId;
+  }
+
   const matches = await prisma.match.findMany({
-    where: { matchday },
+    where,
     orderBy: { date: "asc" },
   });
 

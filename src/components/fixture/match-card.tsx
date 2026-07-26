@@ -183,11 +183,16 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
           </div>
         </div>
 
-        {/* Row 2: Date + Status / Action */}
+        {/* Row 2: Date + Prediction + Status / Action */}
         <div className="flex items-center justify-between text-xs">
           <span className="text-white/40">
             {dateStr} {match.time || ""}
           </span>
+          {(isFinished || isLive) && prediction && (
+            <span className="text-white/30">
+              (vos: {prediction.homeGoals} - {prediction.awayGoals})
+            </span>
+          )}
           <div>
             {isFinished && (
               <span className="inline-flex items-center gap-1 font-semibold text-green-400">

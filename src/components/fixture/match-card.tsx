@@ -38,7 +38,7 @@ function PointsBadge({
 }) {
   if (!isFinished) {
     return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-xs font-bold text-white/40 shrink-0">
+      <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xs font-bold text-white/40 shrink-0">
         -
       </div>
     );
@@ -50,9 +50,10 @@ function PointsBadge({
     <div
       className={cn(
         "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0",
-        pts >= 12 && "bg-yellow-500 text-black",
-        pts >= 5 && pts < 12 && "bg-blue-500 text-white",
-        pts >= 2 && pts < 5 && "bg-green-500 text-white",
+        pts === 12 && "bg-white text-red-500",
+        pts === 7 && "bg-blue-700 text-white",
+        pts === 5 && "bg-blue-700 text-white",
+        pts === 2 && "bg-orange-500 text-white",
         pts === 0 && "bg-white/10 text-white/40"
       )}
     >
@@ -107,8 +108,6 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
     <Card
       className={cn(
         "border-white/10 bg-black/40 backdrop-blur-sm transition-all duration-300",
-        gotPoints && "border-green-500/40 bg-green-500/5",
-        gotZero && "border-red-500/40 bg-red-500/5",
         isLive && "border-red-500/50 shadow-lg shadow-red-500/10",
         saved && "border-blue-400/50"
       )}

@@ -5,7 +5,7 @@ import { MatchdaySelector } from "@/components/fixture/matchday-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
-import { Calendar, Filter } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export default async function FixturePage({
   searchParams,
@@ -82,14 +82,6 @@ export default async function FixturePage({
     },
   });
 
-  const liveMatches = await prisma.match.count({
-    where: {
-      tournamentId: tournament.id,
-      matchday: currentMatchday,
-      status: "LIVE",
-    },
-  });
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -111,11 +103,6 @@ export default async function FixturePage({
             {finishedMatches} finalizados
           </Badge>
         )}
-        {liveMatches > 0 && (
-          <Badge variant="destructive" className="gap-1 animate-pulse">
-            {liveMatches} en vivo
-          </Badge>
-        )}
       </div>
 
       {/* Matchday Selector */}
@@ -126,7 +113,7 @@ export default async function FixturePage({
 
       {/* Status Filters */}
       <div className="flex flex-wrap gap-2">
-        {["all", "scheduled", "live", "finished"].map((status) => (
+        {["all", "scheduled", "finished"].map((status) => (
           <a
             key={status}
             href={`/fixture?matchday=${currentMatchday}&status=${status}`}
@@ -140,8 +127,6 @@ export default async function FixturePage({
               ? "Todos"
               : status === "scheduled"
               ? "Pendientes"
-              : status === "live"
-              ? "En vivo"
               : "Finalizados"}
           </a>
         ))}

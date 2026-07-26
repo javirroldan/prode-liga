@@ -127,9 +127,7 @@ export async function submitMatchResult(
   const match = await prisma.match.findUnique({ where: { id: matchId } });
   if (!match) return { error: "Partido no encontrado" };
 
-  if (match.status === "FINISHED") {
-    return { error: "Este partido ya tiene resultado cargado y no se puede modificar" };
-  }
+  const wasFinished = match.status === "FINISHED";
 
   if (homeGoals < 0 || awayGoals < 0) {
     return { error: "Los goles no pueden ser negativos" };

@@ -52,7 +52,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
       if (result?.error) {
         setMessage({ type: "error", text: result.error });
       } else {
-        setMessage({ type: "success", text: "Resultado guardado y puntos calculados" });
+        setMessage({ type: "success", text: match.status === "FINISHED" ? "Resultado corregido y puntos recalculados" : "Resultado guardado y puntos calculados" });
         setLocalMatches((prev) =>
           prev.map((m) =>
             m.id === matchId
@@ -152,64 +152,55 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                     {match.homeTeam}
                   </span>
 
-                  {isFinished ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-green-400">{match.homeGoals}</span>
-                      <span className="text-white/30">-</span>
-                      <span className="text-2xl font-bold text-green-400">{match.awayGoals}</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        min="0"
-                        max="20"
-                        value={match.homeGoals ?? ""}
-                        onChange={(e) => handleGoalsChange(match.id, "homeGoals", e.target.value)}
-                        className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
-                        placeholder="-"
-                      />
-                      <span className="text-white/30">-</span>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="20"
-                        value={match.awayGoals ?? ""}
-                        onChange={(e) => handleGoalsChange(match.id, "awayGoals", e.target.value)}
-                        className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
-                        placeholder="-"
-                      />
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={match.homeGoals ?? ""}
+                      onChange={(e) => handleGoalsChange(match.id, "homeGoals", e.target.value)}
+                      className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                      placeholder="-"
+                    />
+                    <span className="text-white/30">-</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={match.awayGoals ?? ""}
+                      onChange={(e) => handleGoalsChange(match.id, "awayGoals", e.target.value)}
+                      className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                      placeholder="-"
+                    />
+                  </div>
 
                   <span className="flex-1 text-left font-medium text-sm text-white">
                     {match.awayTeam}
                   </span>
                 </div>
 
-                {!isFinished && (
-                  <div className="mt-3 flex gap-2">
-                    <Button
-                      onClick={() => handleSubmit(match.id)}
-                      disabled={isPending || match.homeGoals === null || match.awayGoals === null}
-                      className="flex-1"
-                      size="sm"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      {isPending ? "Guardando..." : "Guardar resultado"}
-                    </Button>
-                    <Button
-                      onClick={() => handleToggleLive(match.id)}
-                      disabled={isPending}
-                      variant={isLive ? "destructive" : "outline"}
-                      size="sm"
-                      className={isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}
-                    >
-                      <Radio className="mr-1 h-4 w-4" />
-                      {isLive ? "Quitar en vivo" : "En vivo"}
-                    </Button>
-                  </div>
-                )}
+                <div className="mt-3 flex gap-2">
+                  <Button
+                    onClick={() => handleSubmit(match.id)}
+                    disabled={isPending || match.homeGoals === null || match.awayGoals === null}
+                    className="flex-1"
+                    size="sm"
+                    variant={isFinished ? "outline" : "default"}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    {isPending ? "Guardando..." : isFinished ? "Corregir resultado" : "Guardar resultado"}
+                  </Button>
+                  <Button
+                    onClick={() => handleToggleLive(match.id)}
+                    disabled={isPending}
+                    variant={isLive ? "destructive" : "outline"}
+                    size="sm"
+                    className={isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}
+                  >
+                    <Radio className="mr-1 h-4 w-4" />
+                    {isLive ? "Quitar en vivo" : "En vivo"}
+                  </Button>
+                </div>
 
                 {isFinished && match.predictions.length > 0 && (
                   <div className="mt-3 text-xs text-white/50">

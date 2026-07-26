@@ -134,7 +134,7 @@ export default async function AdminPage({
             Cargar Resultados - Fecha {currentMatchday}
           </CardTitle>
           <CardDescription className="text-white/50">
-            Ingresa los goles de cada partido. Una vez guardado, no se puede modificar.
+            Ingresa los goles de cada partido. Los resultados pueden corregirse.
           </CardDescription>
         </CardHeader>
         <CardContent>

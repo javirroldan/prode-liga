@@ -8,7 +8,7 @@ export function isMatchLocked(matchDate: Date, time: string | null): boolean {
 
   if (time) {
     const [hours, minutes] = time.split(":").map(Number);
-    matchDateTime.setUTCHours(hours, minutes, 0, 0);
+    matchDateTime.setHours(hours, minutes, 0, 0);
   }
 
   const diff = matchDateTime.getTime() - now.getTime();

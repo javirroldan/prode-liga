@@ -9,9 +9,10 @@ import {
 } from "@/actions/tournaments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
+import { RankingTabs } from "@/components/ranking-tabs";
 import { redirect } from "next/navigation";
-import { Trophy, Medal, TrendingUp, Target, BarChart3 } from "lucide-react";
+import { Trophy, Medal, TrendingUp, Target } from "lucide-react";
 import { getCurrentMatchday } from "@/lib/match-utils";
 
 function getPositionStyle(position: number) {
@@ -222,20 +223,7 @@ export default async function RankingPage({
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="general">
-        <TabsList className="bg-white/5 border-white/10">
-          <TabsTrigger value="general" className="data-[state=active]:bg-blue-500/20">
-            General
-          </TabsTrigger>
-          <TabsTrigger value="fecha" className="data-[state=active]:bg-blue-500/20">
-            Por Fecha
-          </TabsTrigger>
-          <TabsTrigger value="stats" className="data-[state=active]:bg-blue-500/20">
-            <BarChart3 className="mr-1 h-4 w-4" />
-            Estadisticas
-          </TabsTrigger>
-        </TabsList>
-
+      <RankingTabs>
         {/* General tab */}
         <TabsContent value="general">
           <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
@@ -380,7 +368,7 @@ export default async function RankingPage({
             </Card>
           </div>
         </TabsContent>
-      </Tabs>
+      </RankingTabs>
     </div>
   );
 }

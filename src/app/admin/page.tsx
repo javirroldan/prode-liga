@@ -138,7 +138,7 @@ export default async function AdminPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResultEntryForm matches={matchesForForm} currentMatchday={currentMatchday} />
+          <ResultEntryForm key={currentMatchday} matches={matchesForForm} currentMatchday={currentMatchday} />
         </CardContent>
       </Card>
     </div>

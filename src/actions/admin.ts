@@ -23,7 +23,14 @@ export async function createTournament(formData: FormData) {
     return { error: "Nombre y temporada son obligatorios" };
   }
 
-  const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const firstWord = name.split(/\s+/)[0].toUpperCase().substring(0, 4);
+  const seasonSuffix = season.replace(/^20/, "").substring(0, 2);
+  let inviteCode = firstWord + seasonSuffix;
+
+  const existing = await prisma.tournament.findUnique({ where: { inviteCode } });
+  if (existing) {
+    inviteCode += Math.floor(Math.random() * 10);
+  }
 
   await prisma.tournament.create({
     data: {
@@ -35,6 +42,21 @@ export async function createTournament(formData: FormData) {
 
   revalidatePath("/admin");
   return { success: true, inviteCode };
+}
+
+export async function deleteTournament(tournamentId: string) {
+  await requireAdmin();
+
+  const tournament = await prisma.tournament.findUnique({ where: { id: tournamentId } });
+  if (!tournament) return { error: "Torneo no encontrado" };
+
+  await prisma.tournament.delete({ where: { id: tournamentId } });
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  revalidatePath("/ranking");
+  revalidatePath("/fixture");
+  return { success: true };
 }
 
 export async function getUsersWithoutPrediction(matchday: number) {

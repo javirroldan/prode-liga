@@ -20,81 +20,45 @@ export function isMatchLocked(matchDate: Date, time: string | null): boolean {
 }
 
 /**
- * Determine which matchday to show for dashboard users automatically.
+ * Determine which matchday to show based on the date of the first match.
  *
  * Logic:
- * 1. Find the first matchday with SCHEDULED or LIVE matches
- * 2. If there's a previous finished matchday, check if 24h passed
- * 3. If 24h NOT passed → show the finished matchday (waiting message)
- * 4. If 24h passed or no previous finished → show the active matchday
+ * 1. Get all matchdays with their earliest match date, ordered by date
+ * 2. Find the first matchday whose first match is in the future
+ * 3. The "current" matchday is the one before that
+ * 4. If no future matchday exists, show the last one
  */
 export async function getCurrentMatchday(tournamentId: string): Promise<number | null> {
   const now = new Date();
 
-  // Find first matchday with SCHEDULED or LIVE matches
-  const activeMatch = await prisma.match.findFirst({
-    where: {
-      tournamentId,
-      status: { in: ["SCHEDULED", "LIVE"] },
-    },
-    orderBy: [{ matchday: "asc" }, { date: "asc" }],
+  // Get all matchdays with their earliest match date
+  const matchdays = await prisma.match.groupBy({
+    by: ["matchday"],
+    where: { tournamentId },
+    _min: { date: true },
+    orderBy: { matchday: "asc" },
   });
 
-  if (!activeMatch) {
-    // All finished, return last finished matchday
-    const lastFinished = await prisma.match.findFirst({
-      where: { tournamentId, status: "FINISHED" },
-      orderBy: [{ matchday: "desc" }, { date: "desc" }],
-    });
-    return lastFinished?.matchday ?? null;
+  if (matchdays.length === 0) {
+    return null;
   }
 
-  const activeMatchday = activeMatch.matchday;
+  // Find the first matchday whose first match is in the future
+  const futureMatchday = matchdays.find((md) => md._min.date !== null && md._min.date > now);
 
-  // Check if there's a finished matchday before the active one
-  const lastFinishedBefore = await prisma.match.findFirst({
-    where: {
-      tournamentId,
-      status: "FINISHED",
-      matchday: { lt: activeMatchday },
-    },
-    orderBy: [{ matchday: "desc" }, { date: "desc" }],
-  });
-
-  if (!lastFinishedBefore) {
-    // No finished matchday before, show the active one
-    return activeMatchday;
+  if (!futureMatchday) {
+    // No future matchday, show the last one
+    return matchdays[matchdays.length - 1].matchday;
   }
 
-  // Check if 24 hours passed since the last finished matchday ended
-  const lastMatchInDay = await prisma.match.findFirst({
-    where: {
-      tournamentId,
-      matchday: lastFinishedBefore.matchday,
-      status: "FINISHED",
-    },
-    orderBy: { date: "desc" },
-  });
+  // Get the index of the future matchday
+  const futureIndex = matchdays.indexOf(futureMatchday);
 
-  if (!lastMatchInDay) {
-    return activeMatchday;
+  if (futureIndex === 0) {
+    // All matchdays are in the future, show the first one
+    return matchdays[0].matchday;
   }
 
-  const matchEnd = new Date(lastMatchInDay.date);
-  if (lastMatchInDay.time) {
-    const [hours, minutes] = lastMatchInDay.time.split(":").map(Number);
-    matchEnd.setHours(hours, minutes, 0, 0);
-  }
-  matchEnd.setHours(matchEnd.getHours() + 2);
-
-  const twentyFourHoursMs = 24 * 60 * 60 * 1000;
-  const timeSinceEnd = now.getTime() - matchEnd.getTime();
-
-  if (timeSinceEnd < twentyFourHoursMs) {
-    // 24h NOT passed, show the finished matchday (waiting message)
-    return lastFinishedBefore.matchday;
-  }
-
-  // 24h passed, show the active matchday
-  return activeMatchday;
+  // The current matchday is the one before the future one
+  return matchdays[futureIndex - 1].matchday;
 }

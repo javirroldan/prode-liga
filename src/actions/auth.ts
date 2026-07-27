@@ -50,8 +50,8 @@ export async function register(formData: FormData) {
         },
       });
     } catch (e) {
-      // If the user already exists in DB (e.g. from a previous attempt), just continue
       console.error("Error creating user in DB:", e);
+      return { error: "Error al crear el usuario. Intentá de nuevo." };
     }
   }
 

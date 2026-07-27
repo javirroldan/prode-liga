@@ -164,14 +164,12 @@ export default async function DashboardPage({
             <>
               {allFinished && (
                 <Card className="mb-4 border-yellow-500/30 bg-yellow-500/5 backdrop-blur-sm">
-                  <CardContent className="flex items-center gap-3 p-4">
-                    <Clock className="h-5 w-5 text-yellow-400 shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-white">Fecha finalizada</p>
-                      <p className="text-xs text-white/50">
-                        La proxima fecha estara disponible en 24 horas.
-                      </p>
-                    </div>
+                  <CardContent className="p-6 text-center">
+                    <Clock className="mx-auto mb-2 h-8 w-8 text-yellow-400" />
+                    <p className="text-lg font-semibold text-white">Fecha finalizada</p>
+                    <p className="text-sm text-white/50">
+                      La proxima fecha estara disponible en 24 horas.
+                    </p>
                   </CardContent>
                 </Card>
               )}

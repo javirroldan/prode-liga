@@ -4,7 +4,7 @@
 App de pronósticos (prode) para la Liga Profesional Argentina. Los usuarios se registran, se unen a un torneo, cargan pronósticos de goles por partido y compiten en un ranking.
 
 ## Tech Stack
-- **Framework**: Next.js 15 (App Router) + TypeScript + Tailwind CSS v4
+- **Framework**: Next.js 16 (App Router) + TypeScript + Tailwind CSS v4
 - **UI**: Componentes estilo shadcn (button, card, input, label, badge, separator, avatar, tabs)
 - **Database**: Supabase PostgreSQL + Prisma ORM (v6.19.3)
 - **Auth**: Supabase Auth (email/password)
@@ -24,45 +24,65 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **API-Football**: Key in env `FOOTBALL_API_KEY` (plan gratis, solo datos 2022-2024, NO sirve para temporada 2026)
 
 ## Scoring Rules
-- 12 puntos: resultado exacto
-- 5 puntos: acierta ganador/empate
-- 2 puntos: acierta goles de UN solo equipo
+- 12 puntos: resultado exacto (badge amarillo)
+- 7 puntos: acierta ganador/empate + goles de UN equipo (badge verde)
+- 5 puntos: acierta ganador/empate (badge azul)
+- 2 puntos: acierta goles de UN solo equipo (badge naranja)
+- 0 puntos: nada correcto
 - Máximo 12 puntos por partido
 
 ## Key Features
 - **Fixture real**: Clausura 2026, 16 fechas, 15 partidos por fecha (1 interzonal + 7 zona A + 7 zona B), 30 equipos
-- **Carga manual de resultados**: Admin ingresa goles, una vez guardado no se puede modificar
+- **Carga manual de resultados**: Admin ingresa goles
+- **Corrección de resultados**: Matches FINISHED se pueden re-editar (el admin puede corregir goles)
+- **Reabrir partidos**: Admin puede cambiar status FINISHED → LIVE (resetea goles y puntos)
+- **Actualización parcial**: En partidos LIVE, admin puede actualizar goles sin finalizar ("Actualizar parcial" + "Finalizar")
 - **Bloqueo automático**: Pronósticos se bloquean 1 hora antes del inicio del partido
+- **Auto-detección fecha actual**: Basada en fecha del primer partido, no en status
+- **Banner "Fecha finalizada"**: Aparece arriba de los partidos cuando toda la fecha está completada
+- **Predicción del usuario en cards**: Muestra `(vos: X - X)` en amarillo pastel
 - **Invite code**: `LIGA2026` para unirse al torneo
+- **Recuperación de contraseña**: Flujo forgot-password → email Supabase → callback → update-password
+- **Reset de fecha**: Admin puede reiniciar toda una fecha ("Reiniciar fecha X")
+- **Ranking con desempate**: Orden por puntos, luego por más predicciones de 12, 7, 5, 2
+- **Ranking por fecha**: Tab que muestra quién ganó cada fecha
+- **Estadísticas**: Desglose de predicciones por tier (12, 7, 5, 2, 0) por usuario
 
 ## File Structure
 ```
 src/
 ├── actions/          # Server actions
-│   ├── auth.ts       # register, login, logout, getCurrentUser
+│   ├── auth.ts       # register, login, logout, getCurrentUser, forgotPassword, updatePassword
 │   ├── predictions.ts # submitPrediction, getMatchdayPredictions
-│   ├── tournaments.ts # joinTournament, getTournamentRanking, getUserTournaments
-│   └── admin.ts      # submitMatchResult, getMatchdayResults, createTournament
+│   ├── tournaments.ts # joinTournament, getTournamentRanking, getUserTournaments,
+│   │                   # getRankingWithTiebreak, getMatchdayRanking, getUserStats, getAvailableMatchdays
+│   └── admin.ts      # submitMatchResult, getMatchdayResults, createTournament,
+│                       # resetMatchday, setMatchStatus, updateLiveScore
 ├── app/
 │   ├── page.tsx              # Landing page
 │   ├── auth/login/page.tsx   # Login
 │   ├── auth/register/page.tsx # Register
+│   ├── auth/forgot-password/page.tsx # Forgot password
+│   ├── auth/callback/route.ts # Supabase code exchange for password reset
+│   ├── auth/update-password/page.tsx # Update password
 │   ├── dashboard/page.tsx    # Main dashboard with matchday grid
 │   ├── fixture/page.tsx      # Fixture browser
-│   ├── ranking/page.tsx      # Leaderboard
+│   ├── ranking/page.tsx      # Leaderboard with tabs (General / Por Fecha / Estadísticas)
 │   └── admin/page.tsx        # Admin panel (result entry)
 ├── components/
 │   ├── ui/           # Reusable UI components (button, card, input, etc.)
-│   ├── fixture/      # match-card.tsx, matchday-selector.tsx
+│   ├── fixture/      # match-card.tsx (with color-coded PointsBadge), matchday-selector.tsx
 │   ├── shared/       # join-tournament-form.tsx
-│   └── admin/        # result-entry-form.tsx
+│   ├── admin/        # result-entry-form.tsx
+│   └── ranking-tabs.tsx # Client wrapper for ranking tabs (reads searchParams)
 ├── lib/
 │   ├── prisma.ts     # Prisma client singleton
 │   ├── supabase/     # server.ts, client.ts, middleware.ts
 │   ├── utils.ts      # cn() helper
-│   └── match-utils.ts # isMatchLocked() - time-based prediction locking
+│   └── match-utils.ts # isMatchLocked(), getCurrentMatchday()
 ├── services/
-│   └── scoring.ts    # calculatePoints()
+│   ├── scoring.ts    # calculatePoints() - returns 12, 7, 5, 2, or 0
+│   └── sync.ts       # calculateAndStorePoints() - batch recalculation
 └── middleware.ts     # Auth middleware
 ```
 
@@ -85,7 +105,8 @@ src/
 - `NEXT_PUBLIC_APP_URL` should be set to `https://prode-liga.vercel.app` in Vercel
 - Scripts in `/scripts` folder are excluded from TypeScript compilation (tsconfig exclude)
 - Supabase email confirmation should be disabled for easy registration
-- First admin user: `javiroldan` (ricardojroldan@gmail.com)
+- First admin user: `pachu` (pachu.hyper@gmail.com)
+- PWA: install on Android shows "Crear acceso directo" instead of "Instalar app"
 
 ## Commands
 - `npm run dev` - Start dev server

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { submitMatchResult, setMatchStatus, updateLiveScore } from "@/actions/admin";
+import { submitMatchResult, setMatchStatus, updateLiveScore, resetMatchday } from "@/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -110,9 +110,35 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
     });
   };
 
+  const handleReset = () => {
+    if (!confirm(`¿Borrar todos los pronósticos y resultados de la fecha ${currentMatchday}?`)) return;
+
+    startTransition(async () => {
+      const result = await resetMatchday(currentMatchday);
+      if (result?.error) {
+        setMessage({ type: "error", text: result.error });
+      } else {
+        setMessage({ type: "success", text: `Fecha ${currentMatchday} reiniciada` });
+        setLocalMatches((prev) =>
+          prev.map((m) => ({ ...m, homeGoals: null, awayGoals: null, status: "SCHEDULED" }))
+        );
+      }
+    });
+  };
+
   return (
     <div className="space-y-4">
-      <MatchdaySelector currentMatchday={currentMatchday} baseUrl="/admin" />
+      <div className="flex items-center justify-between">
+        <MatchdaySelector currentMatchday={currentMatchday} baseUrl="/admin" />
+        <Button
+          onClick={handleReset}
+          disabled={isPending}
+          variant="destructive"
+          size="sm"
+        >
+          Reiniciar fecha {currentMatchday}
+        </Button>
+      </div>
 
       {message && (
         <div

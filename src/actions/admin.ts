@@ -229,3 +229,34 @@ async function updateParticipantPoints(tournamentId: string) {
     });
   }
 }
+
+export async function resetMatchday(matchday: number) {
+  await requireAdmin();
+
+  const tournament = await prisma.tournament.findFirst({
+    where: { isActive: true },
+  });
+
+  if (!tournament) return { error: "No hay torneo activo" };
+
+  const matches = await prisma.match.findMany({
+    where: { tournamentId: tournament.id, matchday },
+  });
+
+  for (const match of matches) {
+    await prisma.prediction.deleteMany({ where: { matchId: match.id } });
+
+    await prisma.match.update({
+      where: { id: match.id },
+      data: { homeGoals: null, awayGoals: null, status: "SCHEDULED" },
+    });
+  }
+
+  await updateParticipantPoints(tournament.id);
+
+  revalidatePath("/admin");
+  revalidatePath("/ranking");
+  revalidatePath("/dashboard");
+  revalidatePath("/fixture");
+  return { success: true };
+}

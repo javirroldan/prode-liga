@@ -4,44 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default async function UpdatePasswordPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ code?: string }>;
-}) {
-  const params = await searchParams;
-  const code = params.code;
-
-  if (!code) {
-    return (
-      <Card className="border-white/10 bg-black/60 backdrop-blur-lg">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-white">Enlace inválido</CardTitle>
-          <CardDescription className="text-white/50">
-            El enlace de recuperación no es válido o ya expiró.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link href="/auth/forgot-password">
-            <Button variant="outline" className="w-full border-white/20 text-white">
-              Solicitar nuevo enlace
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-    );
-  }
-
+export default async function UpdatePasswordPage() {
   const supabase = await createClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (error) {
+  if (!user) {
     return (
       <Card className="border-white/10 bg-black/60 backdrop-blur-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-white">Enlace expirado</CardTitle>
+          <CardTitle className="text-2xl text-white">Sesión expirada</CardTitle>
           <CardDescription className="text-white/50">
-            El enlace de recuperación ya no es válido. Solicitá uno nuevo.
+            El enlace ya no es válido. Solicitá uno nuevo.
           </CardDescription>
         </CardHeader>
         <CardContent>

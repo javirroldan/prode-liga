@@ -1,35 +1,32 @@
 import { getMatchdayPredictions } from "@/actions/predictions";
 import { getUserTournaments, leaveTournamentAction } from "@/actions/tournaments";
 import { getCurrentUser } from "@/actions/auth";
+import { getCurrentMatchday } from "@/lib/match-utils";
 import { MatchCard } from "@/components/fixture/match-card";
-import { MatchdaySelector } from "@/components/fixture/matchday-selector";
 import { JoinTournamentForm } from "@/components/shared/join-tournament-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
-import { Trophy, Target, TrendingUp, LogOut } from "lucide-react";
+import { Trophy, Target, TrendingUp, LogOut, Clock } from "lucide-react";
 import Link from "next/link";
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ matchday?: string; tournamentId?: string }>;
+  searchParams: Promise<{ tournamentId?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/login");
 
   const params = await searchParams;
-  const currentMatchday = parseInt(params.matchday || "1");
   const selectedTournamentId = params.tournamentId;
 
   const tournaments = await getUserTournaments();
 
-  // If user has tournaments but no tournamentId in URL, redirect to first
   if (tournaments.length > 0 && !selectedTournamentId) {
     redirect(`/dashboard?tournamentId=${tournaments[0].tournamentId}`);
   }
 
-  // If selected tournament doesn't belong to user, redirect to first
   if (selectedTournamentId && !tournaments.find((t) => t.tournamentId === selectedTournamentId)) {
     if (tournaments.length > 0) {
       redirect(`/dashboard?tournamentId=${tournaments[0].tournamentId}`);
@@ -40,7 +37,11 @@ export default async function DashboardPage({
 
   const activeTournamentId = selectedTournamentId || null;
 
-  const matches = activeTournamentId
+  const currentMatchday = activeTournamentId
+    ? await getCurrentMatchday(activeTournamentId)
+    : null;
+
+  const matches = activeTournamentId && currentMatchday
     ? await getMatchdayPredictions(currentMatchday, activeTournamentId)
     : [];
 
@@ -51,6 +52,8 @@ export default async function DashboardPage({
     0
   );
 
+  const allFinished = matches.length > 0 && matches.every((m: { status: string }) => m.status === "FINISHED");
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -60,7 +63,9 @@ export default async function DashboardPage({
         </h1>
         <p className="text-white/50">
           {activeTournamentId
-            ? `Fecha ${currentMatchday} de la Liga Profesional Argentina`
+            ? currentMatchday
+              ? `Fecha ${currentMatchday} de la Liga Profesional Argentina`
+              : "Cargando fecha..."
             : "Unite a un torneo para comenzar"}
         </p>
       </div>
@@ -72,9 +77,7 @@ export default async function DashboardPage({
             const isActive = t.tournamentId === activeTournamentId;
             return (
               <div key={t.tournamentId} className="flex items-center gap-1">
-                <Link
-                  href={`/dashboard?tournamentId=${t.tournamentId}`}
-                >
+                <Link href={`/dashboard?tournamentId=${t.tournamentId}`}>
                   <Badge
                     variant={isActive ? "default" : "secondary"}
                     className={`cursor-pointer px-3 py-1.5 text-sm transition-colors ${
@@ -147,23 +150,29 @@ export default async function DashboardPage({
       {/* Matchday */}
       {activeTournamentId && (
         <div>
-          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-xl font-semibold text-white">Fecha {currentMatchday}</h2>
-            <MatchdaySelector
-              currentMatchday={currentMatchday}
-              baseUrl={`/dashboard?tournamentId=${activeTournamentId}`}
-            />
-          </div>
+          <h2 className="mb-4 text-xl font-semibold text-white">
+            {currentMatchday ? `Fecha ${currentMatchday}` : "Cargando..."}
+          </h2>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {matches.length === 0 ? (
-              <Card className="col-span-full border-white/10 bg-black/40 backdrop-blur-sm">
-                <CardContent className="p-8 text-center text-white/50">
-                  No hay partidos para esta fecha
-                </CardContent>
-              </Card>
-            ) : (
-              matches.map((match) => (
+          {!currentMatchday ? (
+            <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
+              <CardContent className="p-8 text-center text-white/50">
+                No hay fechas disponibles todavia.
+              </CardContent>
+            </Card>
+          ) : allFinished ? (
+            <Card className="border-yellow-500/30 bg-yellow-500/5 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <Clock className="mx-auto mb-2 h-8 w-8 text-yellow-400" />
+                <p className="text-lg font-semibold text-white">Fecha finalizada</p>
+                <p className="text-sm text-white/50">
+                  La proxima fecha estara disponible en 24 horas.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {matches.map((match: any) => (
                 <MatchCard
                   key={match.id}
                   match={{
@@ -183,13 +192,13 @@ export default async function DashboardPage({
                   }}
                   prediction={match.prediction}
                 />
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Join Tournament - always visible */}
+      {/* Join Tournament */}
       <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-white">

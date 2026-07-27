@@ -50,9 +50,9 @@ function PointsBadge({
     <div
       className={cn(
         "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0",
-        pts === 12 && "bg-white text-red-500",
-        pts === 7 && "bg-blue-700 text-white",
-        pts === 5 && "bg-blue-700 text-white",
+        pts === 12 && "bg-yellow-500 text-white",
+        pts === 7 && "bg-green-500 text-white",
+        pts === 5 && "bg-blue-500 text-white",
         pts === 2 && "bg-orange-500 text-white",
         pts === 0 && "bg-white/10 text-white/40"
       )}

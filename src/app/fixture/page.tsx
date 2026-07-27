@@ -2,15 +2,21 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/actions/auth";
 import { getCurrentMatchday } from "@/lib/match-utils";
 import { MatchCard } from "@/components/fixture/match-card";
+import { MatchdaySelector } from "@/components/fixture/matchday-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
 import { Calendar, Clock } from "lucide-react";
 
-export default async function FixturePage() {
+export default async function FixturePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ matchday?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/login");
 
+  const params = await searchParams;
   const tournament = await prisma.tournament.findFirst({
     where: { isActive: true },
   });
@@ -28,20 +34,14 @@ export default async function FixturePage() {
     );
   }
 
-  const currentMatchday = await getCurrentMatchday(tournament.id);
+  const autoMatchday = await getCurrentMatchday(tournament.id);
+  const currentMatchday = parseInt(params.matchday || "1") || autoMatchday || 1;
 
-  if (!currentMatchday) {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-white">Fixture</h1>
-        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
-          <CardContent className="p-8 text-center text-white/50">
-            No hay fechas disponibles todavia.
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const maxMatchday = await prisma.match.aggregate({
+    where: { tournamentId: tournament.id },
+    _max: { matchday: true },
+  });
+  const totalMatchdays = maxMatchday._max.matchday || 16;
 
   const matches = await prisma.match.findMany({
     where: { tournamentId: tournament.id, matchday: currentMatchday },
@@ -56,6 +56,8 @@ export default async function FixturePage() {
   const totalMatches = matches.length;
   const finishedMatches = matches.filter((m) => m.status === "FINISHED").length;
   const allFinished = finishedMatches === totalMatches && totalMatches > 0;
+  const isActive = currentMatchday === autoMatchday;
+  const isPast = currentMatchday < (autoMatchday || 1);
 
   return (
     <div className="space-y-6">
@@ -78,19 +80,41 @@ export default async function FixturePage() {
         )}
       </div>
 
-      {allFinished ? (
-        <Card className="border-yellow-500/30 bg-yellow-500/5 backdrop-blur-sm">
-          <CardContent className="p-6 text-center">
-            <Clock className="mx-auto mb-2 h-8 w-8 text-yellow-400" />
-            <p className="text-lg font-semibold text-white">Fecha finalizada</p>
-            <p className="text-sm text-white/50">
-              La proxima fecha estara disponible en 24 horas.
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-xl font-semibold text-white">Fecha {currentMatchday}</h2>
+        <MatchdaySelector currentMatchday={currentMatchday} totalMatchdays={totalMatchdays} baseUrl="/fixture" />
+      </div>
+
+      {!isActive && isPast && (
+        <Card className="border-blue-500/30 bg-blue-500/5 backdrop-blur-sm">
+          <CardContent className="p-4 text-center">
+            <p className="text-sm text-blue-400">
+              Esta fecha ya paso. Los pronosticos no se pueden cargar.
             </p>
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {matches.map((match) => {
+      )}
+
+      {!isActive && !isPast && allFinished && (
+        <Card className="border-yellow-500/30 bg-yellow-500/5 backdrop-blur-sm">
+          <CardContent className="p-4 text-center">
+            <Clock className="mx-auto mb-2 h-6 w-6 text-yellow-400" />
+            <p className="text-sm text-yellow-400">
+              Fecha finalizada. La proxima fecha estara disponible en 24 horas.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {matches.length === 0 ? (
+          <Card className="col-span-full border-white/10 bg-black/40 backdrop-blur-sm">
+            <CardContent className="p-8 text-center text-white/50">
+              No hay partidos para esta fecha
+            </CardContent>
+          </Card>
+        ) : (
+          matches.map((match) => {
             const prediction = predictions.find((p) => p.matchId === match.id);
             return (
               <MatchCard
@@ -110,9 +134,9 @@ export default async function FixturePage() {
                 }
               />
             );
-          })}
-        </div>
-      )}
+          })
+        )}
+      </div>
     </div>
   );
 }

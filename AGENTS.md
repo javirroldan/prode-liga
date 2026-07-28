@@ -38,7 +38,7 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Reabrir partidos**: Admin puede cambiar status FINISHED → LIVE (resetea goles y puntos)
 - **Actualización parcial**: En partidos LIVE, admin puede actualizar goles sin finalizar ("Actualizar parcial" + "Finalizar")
 - **Bloqueo automático**: Pronósticos se bloquean 1 hora antes del inicio del partido
-- **Auto-detección fecha actual**: Basada en fecha del primer partido, no en status
+- **Auto-detección fecha actual**: Basada en fecha del primer partido (compara solo fecha, sin hora — a partir de las 00:00 del día que se juega, se muestra esa fecha)
 - **Banner "Fecha finalizada"**: Aparece arriba de los partidos cuando toda la fecha está completada
 - **Predicción del usuario en cards**: Muestra `(vos: X - X)` en amarillo pastel
 - **Invite code**: `LIGA2026` para unirse al torneo
@@ -47,6 +47,8 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Ranking con desempate**: Orden por puntos, luego por más predicciones de 12, 7, 5, 2
 - **Ranking por fecha**: Tab que muestra quién ganó cada fecha
 - **Estadísticas**: Desglose de predicciones por tier (12, 7, 5, 2, 0) por usuario
+- **Escudos de equipos**: Logos PNG en `public/logos/`, mapping en `src/lib/team-logos.ts`, mostrados en admin
+- **Quitar usuarios del torneo**: Admin puede eliminar participantes desde admin/page.tsx
 
 ## File Structure
 ```
@@ -57,7 +59,8 @@ src/
 │   ├── tournaments.ts # joinTournament, getTournamentRanking, getUserTournaments,
 │   │                   # getRankingWithTiebreak, getMatchdayRanking, getUserStats, getAvailableMatchdays
 │   └── admin.ts      # submitMatchResult, getMatchdayResults, createTournament,
-│                       # resetMatchday, setMatchStatus, updateLiveScore
+│                       # resetMatchday, setMatchStatus, updateLiveScore,
+│                       # removeUserFromTournament, getTournamentParticipants
 ├── app/
 │   ├── page.tsx              # Landing page
 │   ├── auth/login/page.tsx   # Login
@@ -73,12 +76,15 @@ src/
 │   ├── ui/           # Reusable UI components (button, card, input, etc.)
 │   ├── fixture/      # match-card.tsx (with color-coded PointsBadge), matchday-selector.tsx
 │   ├── shared/       # join-tournament-form.tsx
-│   ├── admin/        # result-entry-form.tsx
+│   ├── admin/
+│   │   ├── result-entry-form.tsx
+│   │   └── user-management.tsx    # Quitar participantes del torneo
 │   └── ranking-tabs.tsx # Client wrapper for ranking tabs (reads searchParams)
 ├── lib/
 │   ├── prisma.ts     # Prisma client singleton
 │   ├── supabase/     # server.ts, client.ts, middleware.ts
 │   ├── utils.ts      # cn() helper
+│   ├── team-logos.ts # Mapping equipo→logo (/logos/xxx.png)
 │   └── match-utils.ts # isMatchLocked(), getCurrentMatchday()
 ├── services/
 │   ├── scoring.ts    # calculatePoints() - returns 12, 7, 5, 2, or 0
@@ -107,6 +113,9 @@ src/
 - Supabase email confirmation should be disabled for easy registration
 - First admin user: `pachu` (pachu.hyper@gmail.com)
 - PWA: install on Android shows "Crear acceso directo" instead of "Instalar app"
+- Admin mobile: cards con layout apilado (equipo+input por fila), botón Reiniciar arriba del selector
+- Team logos: solo en admin por ahora, 30 equipos mapeados en team-logos.ts
+- Nombres de equipos en DB pueden variar (ej: "Central Córdoba de Santiago", "Talleres", "Unión", "Sarmiento")
 
 ## Commands
 - `npm run dev` - Start dev server

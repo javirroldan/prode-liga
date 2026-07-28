@@ -1,0 +1,37 @@
+const teamLogos: Record<string, string> = {
+  "River Plate": "/logos/river.png",
+  "Boca Juniors": "/logos/boca.png",
+  "Racing Club": "/logos/racing.png",
+  "San Lorenzo": "/logos/sanlorenzo.png",
+  "Huracán": "/logos/huracan.png",
+  "Estudiantes": "/logos/estudiantes.png",
+  "Vélez Sarsfield": "/logos/velez.png",
+  "Gimnasia y Esgrima LP": "/logos/gimnasia.png",
+  "Defensa y Justicia": "/logos/defensa.png",
+  "Lanús": "/logos/lanus.png",
+  "Talleres de Córdoba": "/logos/talleres.png",
+  "Belgrano": "/logos/belgrano.png",
+  "Argentinos Juniors": "/logos/argentinos.png",
+  "Unión Santa Fe": "/logos/union.png",
+  "Tigre": "/logos/tigre.png",
+  "Platense": "/logos/platense.png",
+  "Atlético Tucumán": "/logos/atleticotucuman.png",
+  "Sarmiento de Junín": "/logos/sarmiento.png",
+  "Central Córdoba SdE": "/logos/centralcordoba.png",
+  "Banfield": "/logos/banfield.png",
+  "Godoy Cruz": "/logos/gimnasiamendoza.png",
+  "Newell's Old Boys": "/logos/newells.png",
+  "Rosario Central": "/logos/rosariocentral.png",
+  "Estudiantes de Río Cuarto": "/logos/estudiantesrc.png",
+  "Aldosivi": "/logos/aldosivi.png",
+  "Barracas Central": "/logos/barracas.png",
+  "Independiente": "/logos/independiente.png",
+  "Instituto": "/logos/instituto.png",
+  "Deportivo Riestra": "/logos/riestra.png",
+  "Gimnasia y Esgrima Mendoza": "/logos/gimnasiamendoza.png",
+  "Independiente Rivadavia": "/logos/independienteriv.png",
+};
+
+export function getTeamLogo(teamName: string): string | null {
+  return teamLogos[teamName] ?? null;
+}

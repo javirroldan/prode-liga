@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { submitMatchResult, setMatchStatus, updateLiveScore, resetMatchday } from "@/actions/admin";
+import { getTeamLogo } from "@/lib/team-logos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -198,9 +199,18 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium text-sm text-white truncate">
-                      {match.homeTeam}
-                    </span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      {getTeamLogo(match.homeTeam) && (
+                        <img
+                          src={getTeamLogo(match.homeTeam)!}
+                          alt=""
+                          className="h-6 w-6 shrink-0 rounded-sm"
+                        />
+                      )}
+                      <span className="font-medium text-sm text-white truncate">
+                        {match.homeTeam}
+                      </span>
+                    </div>
                     <Input
                       type="number"
                       min="0"
@@ -212,9 +222,18 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                     />
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium text-sm text-white truncate">
-                      {match.awayTeam}
-                    </span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      {getTeamLogo(match.awayTeam) && (
+                        <img
+                          src={getTeamLogo(match.awayTeam)!}
+                          alt=""
+                          className="h-6 w-6 shrink-0 rounded-sm"
+                        />
+                      )}
+                      <span className="font-medium text-sm text-white truncate">
+                        {match.awayTeam}
+                      </span>
+                    </div>
                     <Input
                       type="number"
                       min="0"

@@ -196,12 +196,11 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                   )}
                 </div>
 
-                <div className="flex flex-col items-center gap-1">
-                  <span className="font-medium text-sm text-white text-center">
-                    {match.homeTeam}
-                  </span>
-
-                  <div className="flex items-center gap-2">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium text-sm text-white truncate">
+                      {match.homeTeam}
+                    </span>
                     <Input
                       type="number"
                       min="0"
@@ -211,7 +210,11 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                       className="w-14 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
                       placeholder="-"
                     />
-                    <span className="text-white/30">-</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium text-sm text-white truncate">
+                      {match.awayTeam}
+                    </span>
                     <Input
                       type="number"
                       min="0"
@@ -222,10 +225,6 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                       placeholder="-"
                     />
                   </div>
-
-                  <span className="font-medium text-sm text-white text-center">
-                    {match.awayTeam}
-                  </span>
                 </div>
 
                 <div className="mt-3 flex flex-col sm:flex-row gap-2">

@@ -128,16 +128,17 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <MatchdaySelector currentMatchday={currentMatchday} baseUrl="/admin" />
+      <div className="space-y-3">
         <Button
           onClick={handleReset}
           disabled={isPending}
           variant="destructive"
           size="sm"
+          className="w-full sm:w-auto"
         >
           Reiniciar fecha {currentMatchday}
         </Button>
+        <MatchdaySelector currentMatchday={currentMatchday} baseUrl="/admin" />
       </div>
 
       {message && (
@@ -176,38 +177,38 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
               } backdrop-blur-sm`}
             >
               <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs text-white/50">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-xs text-white/50 truncate">
                     {dateStr} {match.time && `- ${match.time}`}
                   </span>
                   {isFinished ? (
-                    <Badge variant="outline" className="border-green-500/50 text-green-400 text-xs">
+                    <Badge variant="outline" className="shrink-0 border-green-500/50 text-green-400 text-xs">
                       <Lock className="mr-1 h-3 w-3" /> Finalizado
                     </Badge>
                   ) : isLive ? (
-                    <Badge variant="outline" className="border-red-500/50 text-red-400 text-xs animate-pulse">
+                    <Badge variant="outline" className="shrink-0 border-red-500/50 text-red-400 text-xs animate-pulse">
                       <Radio className="mr-1 h-3 w-3" /> En vivo
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="border-yellow-500/50 text-yellow-400 text-xs">
+                    <Badge variant="outline" className="shrink-0 border-yellow-500/50 text-yellow-400 text-xs">
                       Pendiente
                     </Badge>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <span className="flex-1 text-right font-medium text-xs sm:text-sm text-white truncate">
+                <div className="flex flex-col items-center gap-1">
+                  <span className="font-medium text-sm text-white text-center">
                     {match.homeTeam}
                   </span>
 
-                  <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="flex items-center gap-2">
                     <Input
                       type="number"
                       min="0"
                       max="20"
                       value={match.homeGoals ?? ""}
                       onChange={(e) => handleGoalsChange(match.id, "homeGoals", e.target.value)}
-                      className="w-12 sm:w-16 text-center text-base sm:text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                      className="w-14 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
                       placeholder="-"
                     />
                     <span className="text-white/30">-</span>
@@ -217,12 +218,12 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                       max="20"
                       value={match.awayGoals ?? ""}
                       onChange={(e) => handleGoalsChange(match.id, "awayGoals", e.target.value)}
-                      className="w-12 sm:w-16 text-center text-base sm:text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                      className="w-14 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
                       placeholder="-"
                     />
                   </div>
 
-                  <span className="flex-1 text-left font-medium text-xs sm:text-sm text-white truncate">
+                  <span className="font-medium text-sm text-white text-center">
                     {match.awayTeam}
                   </span>
                 </div>

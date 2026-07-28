@@ -43,8 +43,14 @@ export async function getCurrentMatchday(tournamentId: string): Promise<number |
     return null;
   }
 
-  // Find the first matchday whose first match is in the future
-  const futureMatchday = matchdays.find((md) => md._min.date !== null && md._min.date > now);
+  // Find the first matchday whose first match is tomorrow or later
+  const startOfTomorrow = new Date();
+  startOfTomorrow.setHours(0, 0, 0, 0);
+  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+  const futureMatchday = matchdays.find(
+    (md) => md._min.date !== null && md._min.date >= startOfTomorrow
+  );
 
   if (!futureMatchday) {
     // No future matchday, show the last one

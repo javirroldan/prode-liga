@@ -195,19 +195,19 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                   )}
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="flex-1 text-right font-medium text-sm text-white">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="flex-1 text-right font-medium text-xs sm:text-sm text-white truncate">
                     {match.homeTeam}
                   </span>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 sm:gap-2">
                     <Input
                       type="number"
                       min="0"
                       max="20"
                       value={match.homeGoals ?? ""}
                       onChange={(e) => handleGoalsChange(match.id, "homeGoals", e.target.value)}
-                      className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                      className="w-12 sm:w-16 text-center text-base sm:text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
                       placeholder="-"
                     />
                     <span className="text-white/30">-</span>
@@ -217,23 +217,23 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                       max="20"
                       value={match.awayGoals ?? ""}
                       onChange={(e) => handleGoalsChange(match.id, "awayGoals", e.target.value)}
-                      className="w-16 text-center text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                      className="w-12 sm:w-16 text-center text-base sm:text-lg font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30"
                       placeholder="-"
                     />
                   </div>
 
-                  <span className="flex-1 text-left font-medium text-sm text-white">
+                  <span className="flex-1 text-left font-medium text-xs sm:text-sm text-white truncate">
                     {match.awayTeam}
                   </span>
                 </div>
 
-                <div className="mt-3 flex gap-2">
+                <div className="mt-3 flex flex-col sm:flex-row gap-2">
                   {isLive ? (
                     <>
                       <Button
                         onClick={() => handleUpdateLive(match.id)}
                         disabled={isPending || match.homeGoals === null || match.awayGoals === null}
-                        className="flex-1"
+                        className="flex-1 w-full sm:w-auto"
                         size="sm"
                         variant="outline"
                       >
@@ -243,6 +243,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                       <Button
                         onClick={() => handleSubmit(match.id)}
                         disabled={isPending || match.homeGoals === null || match.awayGoals === null}
+                        className="w-full sm:w-auto"
                         size="sm"
                       >
                         <CheckCircle2 className="mr-2 h-4 w-4" />
@@ -253,7 +254,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                     <Button
                       onClick={() => handleSubmit(match.id)}
                       disabled={isPending || match.homeGoals === null || match.awayGoals === null}
-                      className="flex-1"
+                      className="flex-1 w-full sm:w-auto"
                       size="sm"
                       variant={isFinished ? "outline" : "default"}
                     >
@@ -266,7 +267,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                     disabled={isPending}
                     variant={isLive ? "destructive" : "outline"}
                     size="sm"
-                    className={isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}
+                    className={`w-full sm:w-auto ${isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}`}
                   >
                     <Radio className="mr-1 h-4 w-4" />
                     {isFinished ? "Reabrir partido" : isLive ? "Quitar en vivo" : "En vivo"}

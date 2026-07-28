@@ -252,6 +252,61 @@ async function updateParticipantPoints(tournamentId: string) {
   }
 }
 
+export async function removeUserFromTournament(userId: string, tournamentId: string) {
+  await requireAdmin();
+
+  const participation = await prisma.participation.findUnique({
+    where: {
+      userId_tournamentId: {
+        userId,
+        tournamentId,
+      },
+    },
+  });
+
+  if (!participation) {
+    return { error: "El usuario no participa de este torneo" };
+  }
+
+  await prisma.prediction.deleteMany({
+    where: {
+      userId,
+      match: { tournamentId },
+    },
+  });
+
+  await prisma.participation.delete({
+    where: { id: participation.id },
+  });
+
+  await updateParticipantPoints(tournamentId);
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  revalidatePath("/ranking");
+  revalidatePath("/fixture");
+  return { success: true };
+}
+
+export async function getTournamentParticipants(tournamentId: string) {
+  await requireAdmin();
+
+  return prisma.participation.findMany({
+    where: { tournamentId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          nickname: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: { totalPoints: "desc" },
+  });
+}
+
 export async function resetMatchday(matchday: number) {
   await requireAdmin();
 

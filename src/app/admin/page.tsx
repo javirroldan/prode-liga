@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResultEntryForm } from "@/components/admin/result-entry-form";
 import { CreateTournamentForm } from "@/components/admin/create-tournament-form";
+import { UserManagement } from "@/components/admin/user-management";
+import { getTournamentParticipants } from "@/actions/admin";
 import { 
   Users, 
   Trophy,
@@ -70,6 +72,10 @@ export default async function AdminPage({
       user: { nickname: p.user.nickname },
     })),
   }));
+
+  const participants = activeTournament
+    ? await getTournamentParticipants(activeTournament.id)
+    : [];
 
   return (
     <div className="space-y-8">
@@ -141,6 +147,17 @@ export default async function AdminPage({
           <ResultEntryForm key={currentMatchday} matches={matchesForForm} currentMatchday={currentMatchday} />
         </CardContent>
       </Card>
+
+      {activeTournament && (
+        <UserManagement
+          participants={participants.map((p) => ({
+            user: p.user,
+            totalPoints: p.totalPoints,
+            joinedAt: p.joinedAt,
+          }))}
+          tournamentId={activeTournament.id}
+        />
+      )}
     </div>
   );
 }

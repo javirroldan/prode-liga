@@ -35,7 +35,7 @@ export default async function FixturePage({
   }
 
   const autoMatchday = await getCurrentMatchday(tournament.id);
-  const currentMatchday = parseInt(params.matchday || "1") || autoMatchday || 1;
+  const currentMatchday = params.matchday ? parseInt(params.matchday) : (autoMatchday || 1);
 
   const maxMatchday = await prisma.match.aggregate({
     where: { tournamentId: tournament.id },

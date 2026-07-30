@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentMatchday } from "@/lib/match-utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResultEntryForm } from "@/components/admin/result-entry-form";
 import { CreateTournamentForm } from "@/components/admin/create-tournament-form";
@@ -28,20 +29,37 @@ export default async function AdminPage({
   if (!dbUser?.isAdmin) redirect("/dashboard");
 
   const params = await searchParams;
-  const currentMatchday = parseInt(params.matchday || "1");
+
+  const activeTournament = await prisma.tournament.findFirst({ where: { isActive: true } });
+  const autoMatchday = activeTournament ? await getCurrentMatchday(activeTournament.id) : null;
+  const currentMatchday = params.matchday ? parseInt(params.matchday) : autoMatchday;
+
+  if (!currentMatchday) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Panel de Administracion</h1>
+          <p className="text-white/50">Gestiona el prode de la Liga Profesional</p>
+        </div>
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
+          <CardContent className="p-8 text-center text-white/50">
+            No hay fechas disponibles todavia.
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const [
     totalUsers,
     totalTournaments,
     totalMatches,
     totalFinished,
-    activeTournament,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.tournament.count(),
     prisma.match.count(),
     prisma.match.count({ where: { status: "FINISHED" } }),
-    prisma.tournament.findFirst({ where: { isActive: true } }),
   ]);
 
   const matches = await prisma.match.findMany({

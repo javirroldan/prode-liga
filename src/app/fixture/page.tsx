@@ -35,13 +35,29 @@ export default async function FixturePage({
   }
 
   const autoMatchday = await getCurrentMatchday(tournament.id);
-  const currentMatchday = params.matchday ? parseInt(params.matchday) : (autoMatchday || 1);
+  const currentMatchday = params.matchday ? parseInt(params.matchday) : autoMatchday;
 
   const maxMatchday = await prisma.match.aggregate({
     where: { tournamentId: tournament.id },
     _max: { matchday: true },
   });
   const totalMatchdays = maxMatchday._max.matchday || 16;
+
+  if (!currentMatchday) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Fixture</h1>
+          <p className="text-white/50">{tournament.name}</p>
+        </div>
+        <Card className="border-white/10 bg-black/40 backdrop-blur-sm">
+          <CardContent className="p-8 text-center text-white/50">
+            No hay fechas disponibles todavia.
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const matches = await prisma.match.findMany({
     where: { tournamentId: tournament.id, matchday: currentMatchday },
@@ -57,7 +73,7 @@ export default async function FixturePage({
   const finishedMatches = matches.filter((m) => m.status === "FINISHED").length;
   const allFinished = finishedMatches === totalMatches && totalMatches > 0;
   const isActive = currentMatchday === autoMatchday;
-  const isPast = currentMatchday < (autoMatchday || 1);
+  const isPast = autoMatchday !== null && currentMatchday < autoMatchday;
 
   return (
     <div className="space-y-6">

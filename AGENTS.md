@@ -38,7 +38,7 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Reabrir partidos**: Admin puede cambiar status FINISHED → LIVE (resetea goles y puntos)
 - **Actualización parcial**: En partidos LIVE, admin puede actualizar goles sin finalizar ("Actualizar parcial" + "Finalizar")
 - **Bloqueo automático**: Pronósticos se bloquean 1 hora antes del inicio del partido
-- **Auto-detección fecha actual**: Basada en fecha del primer partido (compara solo fecha, sin hora — a partir de las 00:00 del día que se juega, se muestra esa fecha). Tanto dashboard como fixture muestran la fecha actual por defecto
+- **Auto-detección fecha actual**: Basada en fecha del primer partido (compara solo fecha, sin hora — a partir de las 00:00 del día que se juega, se muestra esa fecha). Tanto dashboard, fixture como admin muestran la fecha actual por defecto
 - **Banner "Fecha finalizada"**: Aparece arriba de los partidos cuando toda la fecha está completada
 - **Predicción del usuario en cards**: Muestra `(vos: X - X)` en amarillo pastel
 - **Invite code**: `LIGA2026` para unirse al torneo

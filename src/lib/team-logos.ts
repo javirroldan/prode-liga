@@ -17,7 +17,7 @@ const teamLogos: Record<string, string> = {
   "Platense": "/logos/platense.png",
   "Atlético Tucumán": "/logos/atleticotucuman.png",
   "Sarmiento": "/logos/sarmiento.png",
-  "Central Córdoba de Santiago": "/logos/centralcordoba.png",
+  "Central Cordoba": "/logos/centralcordoba.png",
   "Banfield": "/logos/banfield.png",
   "Newell's Old Boys": "/logos/newells.png",
   "Rosario Central": "/logos/rosariocentral.png",

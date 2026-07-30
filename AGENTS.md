@@ -115,7 +115,7 @@ src/
 - PWA: install on Android shows "Crear acceso directo" instead of "Instalar app"
 - Admin mobile: cards con layout apilado (equipo+input por fila), botón Reiniciar arriba del selector
 - Team logos: solo en admin por ahora, 30 equipos mapeados en team-logos.ts
-- Nombres de equipos en DB pueden variar (ej: "Central Córdoba de Santiago", "Talleres", "Unión", "Sarmiento")
+- Nombres de equipos en DB pueden variar (ej: "Central Cordoba", "Talleres", "Unión", "Sarmiento")
 
 ## Commands
 - `npm run dev` - Start dev server

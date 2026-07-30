@@ -11,7 +11,7 @@ const fixture = [
   { matchday: 1, home: 'Sarmiento', away: 'Argentinos Juniors', date: '2026-07-23', time: '19:30', zone: 'Zona B' },
   { matchday: 1, home: 'Defensa y Justicia', away: 'Aldosivi', date: '2026-07-23', time: '21:45', zone: 'Interzonal' },
   // Viernes 24 julio
-  { matchday: 1, home: 'Gimnasia y Esgrima Mendoza', away: 'Central Córdoba de Santiago', date: '2026-07-24', time: '16:45', zone: 'Zona A' },
+  { matchday: 1, home: 'Gimnasia y Esgrima Mendoza', away: 'Central Cordoba', date: '2026-07-24', time: '16:45', zone: 'Zona A' },
   { matchday: 1, home: 'Racing Club', away: 'Gimnasia y Esgrima LP', date: '2026-07-24', time: '19:00', zone: 'Zona B' },
   { matchday: 1, home: 'Vélez Sarsfield', away: 'Instituto', date: '2026-07-24', time: '19:00', zone: 'Zona A' },
   { matchday: 1, home: 'Huracán', away: 'Banfield', date: '2026-07-24', time: '19:00', zone: 'Zona B' },
@@ -41,7 +41,7 @@ const fixture = [
   { matchday: 2, home: 'Independiente Rivadavia', away: 'Huracán', date: '2026-07-30', time: '19:00', zone: 'Zona B' },
   { matchday: 2, home: 'Talleres', away: 'Vélez Sarsfield', date: '2026-07-30', time: '19:00', zone: 'Zona A' },
   { matchday: 2, home: 'Independiente', away: 'Newell\'s Old Boys', date: '2026-07-30', time: '21:15', zone: 'Zona A' },
-  { matchday: 2, home: 'Central Córdoba de Santiago', away: 'Atlético Tucumán', date: '2026-07-30', time: '21:15', zone: 'Interzonal' },
+  { matchday: 2, home: 'Central Cordoba', away: 'Atlético Tucumán', date: '2026-07-30', time: '21:15', zone: 'Interzonal' },
   // Postponed (CONMEBOL)
   { matchday: 2, home: 'Boca Juniors', away: 'Estudiantes LP', date: '2026-08-05', time: '19:00', zone: 'Zona A' },
   { matchday: 2, home: 'Tigre', away: 'Belgrano', date: '2026-08-05', time: '21:15', zone: 'Zona B' },
@@ -64,11 +64,11 @@ const fixture = [
   { matchday: 3, home: 'Sarmiento', away: 'Independiente Rivadavia', date: '2026-08-03', time: '16:45', zone: 'Zona B' },
   { matchday: 3, home: 'Platense', away: 'Talleres', date: '2026-08-03', time: '19:00', zone: 'Zona A' },
   { matchday: 3, home: 'Vélez Sarsfield', away: 'Independiente', date: '2026-08-03', time: '19:00', zone: 'Zona A' },
-  { matchday: 3, home: 'Central Córdoba de Santiago', away: 'San Lorenzo', date: '2026-08-03', time: '21:15', zone: 'Zona A' },
+  { matchday: 3, home: 'Central Cordoba', away: 'San Lorenzo', date: '2026-08-03', time: '21:15', zone: 'Zona A' },
   { matchday: 3, home: 'Huracán', away: 'Atlético Tucumán', date: '2026-08-03', time: '21:15', zone: 'Zona B' },
 
   // FECHA 4 (sin horarios confirmados, uso sábado/domingo genéricos)
-  { matchday: 4, home: 'Unión', away: 'Central Córdoba de Santiago', date: '2026-08-08', time: '15:00', zone: 'Zona A' },
+  { matchday: 4, home: 'Unión', away: 'Central Cordoba', date: '2026-08-08', time: '15:00', zone: 'Zona A' },
   { matchday: 4, home: 'Rosario Central', away: 'Aldosivi', date: '2026-08-08', time: '15:00', zone: 'Zona B' },
   { matchday: 4, home: 'Argentinos Juniors', away: 'Racing Club', date: '2026-08-08', time: '17:15', zone: 'Zona B' },
   { matchday: 4, home: 'Tigre', away: 'River Plate', date: '2026-08-08', time: '19:30', zone: 'Zona B' },
@@ -98,7 +98,7 @@ const fixture = [
   { matchday: 5, home: 'Estudiantes LP', away: 'Gimnasia y Esgrima LP', date: '2026-08-17', time: '17:15', zone: 'Zona A' },
   { matchday: 5, home: 'Platense', away: 'Boca Juniors', date: '2026-08-17', time: '19:30', zone: 'Zona A' },
   { matchday: 5, home: 'Barracas Central', away: 'Rosario Central', date: '2026-08-17', time: '21:45', zone: 'Zona B' },
-  { matchday: 5, home: 'Central Córdoba de Santiago', away: 'Instituto', date: '2026-08-18', time: '19:00', zone: 'Zona A' },
+  { matchday: 5, home: 'Central Cordoba', away: 'Instituto', date: '2026-08-18', time: '19:00', zone: 'Zona A' },
   { matchday: 5, home: 'Newell\'s Old Boys', away: 'Deportivo Riestra', date: '2026-08-18', time: '21:15', zone: 'Zona A' },
 
   // FECHA 6 (Interzonal)
@@ -112,7 +112,7 @@ const fixture = [
   { matchday: 6, home: 'Independiente', away: 'Independiente Rivadavia', date: '2026-08-23', time: '17:15', zone: 'Zona A' },
   { matchday: 6, home: 'Newell\'s Old Boys', away: 'Banfield', date: '2026-08-23', time: '19:30', zone: 'Zona A' },
   { matchday: 6, home: 'Huracán', away: 'Deportivo Riestra', date: '2026-08-23', time: '21:45', zone: 'Zona B' },
-  { matchday: 6, home: 'Tigre', away: 'Central Córdoba de Santiago', date: '2026-08-24', time: '15:00', zone: 'Zona B' },
+  { matchday: 6, home: 'Tigre', away: 'Central Cordoba', date: '2026-08-24', time: '15:00', zone: 'Zona B' },
   { matchday: 6, home: 'Estudiantes de Río Cuarto', away: 'San Lorenzo', date: '2026-08-24', time: '15:00', zone: 'Zona B' },
   { matchday: 6, home: 'River Plate', away: 'Vélez Sarsfield', date: '2026-08-24', time: '17:15', zone: 'Zona B' },
   { matchday: 6, home: 'Aldosivi', away: 'Unión', date: '2026-08-24', time: '19:30', zone: 'Zona B' },
@@ -123,7 +123,7 @@ const fixture = [
   { matchday: 7, home: 'Defensa y Justicia', away: 'Platense', date: '2026-08-29', time: '15:00', zone: 'Zona A' },
   { matchday: 7, home: 'Instituto', away: 'San Lorenzo', date: '2026-08-29', time: '17:15', zone: 'Zona A' },
   { matchday: 7, home: 'Atlético Tucumán', away: 'Belgrano', date: '2026-08-29', time: '19:30', zone: 'Zona B' },
-  { matchday: 7, home: 'Talleres', away: 'Central Córdoba de Santiago', date: '2026-08-29', time: '21:45', zone: 'Zona A' },
+  { matchday: 7, home: 'Talleres', away: 'Central Cordoba', date: '2026-08-29', time: '21:45', zone: 'Zona A' },
   { matchday: 7, home: 'Independiente', away: 'Gimnasia y Esgrima Mendoza', date: '2026-08-30', time: '15:00', zone: 'Zona A' },
   { matchday: 7, home: 'Tigre', away: 'Barracas Central', date: '2026-08-30', time: '15:00', zone: 'Zona B' },
   { matchday: 7, home: 'Rosario Central', away: 'Gimnasia y Esgrima LP', date: '2026-08-30', time: '17:15', zone: 'Zona B' },
@@ -138,7 +138,7 @@ const fixture = [
 
   // FECHA 8
   { matchday: 8, home: 'Gimnasia y Esgrima Mendoza', away: 'Boca Juniors', date: '2026-09-05', time: '15:00', zone: 'Zona A' },
-  { matchday: 8, home: 'Central Córdoba de Santiago', away: 'Independiente', date: '2026-09-05', time: '17:15', zone: 'Zona A' },
+  { matchday: 8, home: 'Central Cordoba', away: 'Independiente', date: '2026-09-05', time: '17:15', zone: 'Zona A' },
   { matchday: 8, home: 'San Lorenzo', away: 'Talleres', date: '2026-09-05', time: '19:30', zone: 'Zona A' },
   { matchday: 8, home: 'Rosario Central', away: 'Newell\'s Old Boys', date: '2026-09-05', time: '21:45', zone: 'Zona B' },
   { matchday: 8, home: 'Barracas Central', away: 'Argentinos Juniors', date: '2026-09-06', time: '15:00', zone: 'Zona B' },
@@ -156,7 +156,7 @@ const fixture = [
   // FECHA 9
   { matchday: 9, home: 'Banfield', away: 'Barracas Central', date: '2026-09-12', time: '15:00', zone: 'Zona B' },
   { matchday: 9, home: 'Deportivo Riestra', away: 'Lanús', date: '2026-09-12', time: '17:15', zone: 'Zona A' },
-  { matchday: 9, home: 'Boca Juniors', away: 'Central Córdoba de Santiago', date: '2026-09-12', time: '19:30', zone: 'Zona A' },
+  { matchday: 9, home: 'Boca Juniors', away: 'Central Cordoba', date: '2026-09-12', time: '19:30', zone: 'Zona A' },
   { matchday: 9, home: 'Independiente', away: 'San Lorenzo', date: '2026-09-12', time: '21:45', zone: 'Zona A' },
   { matchday: 9, home: 'Talleres', away: 'Unión', date: '2026-09-13', time: '15:00', zone: 'Zona A' },
   { matchday: 9, home: 'Estudiantes LP', away: 'Platense', date: '2026-09-13', time: '15:00', zone: 'Zona A' },
@@ -181,7 +181,7 @@ const fixture = [
   { matchday: 10, home: 'Barracas Central', away: 'Independiente Rivadavia', date: '2026-09-20', time: '19:30', zone: 'Zona B' },
   { matchday: 10, home: 'Aldosivi', away: 'Atlético Tucumán', date: '2026-09-20', time: '21:45', zone: 'Zona B' },
   { matchday: 10, home: 'Gimnasia y Esgrima Mendoza', away: 'Deportivo Riestra', date: '2026-09-21', time: '15:00', zone: 'Zona A' },
-  { matchday: 10, home: 'Central Córdoba de Santiago', away: 'Defensa y Justicia', date: '2026-09-21', time: '17:15', zone: 'Zona A' },
+  { matchday: 10, home: 'Central Cordoba', away: 'Defensa y Justicia', date: '2026-09-21', time: '17:15', zone: 'Zona A' },
   { matchday: 10, home: 'Instituto', away: 'Talleres', date: '2026-09-21', time: '19:30', zone: 'Zona A' },
   { matchday: 10, home: 'Belgrano', away: 'Estudiantes de Río Cuarto', date: '2026-09-21', time: '21:45', zone: 'Zona B' },
   { matchday: 10, home: 'River Plate', away: 'Huracán', date: '2026-09-22', time: '19:00', zone: 'Zona B' },
@@ -201,7 +201,7 @@ const fixture = [
   { matchday: 11, home: 'Estudiantes de Río Cuarto', away: 'Racing Club', date: '2026-09-28', time: '19:30', zone: 'Zona B' },
   { matchday: 11, home: 'Independiente', away: 'Instituto', date: '2026-09-28', time: '21:45', zone: 'Zona A' },
   { matchday: 11, home: 'Newell\'s Old Boys', away: 'Lanús', date: '2026-09-29', time: '19:00', zone: 'Zona A' },
-  { matchday: 11, home: 'Deportivo Riestra', away: 'Central Córdoba de Santiago', date: '2026-09-29', time: '19:00', zone: 'Zona A' },
+  { matchday: 11, home: 'Deportivo Riestra', away: 'Central Cordoba', date: '2026-09-29', time: '19:00', zone: 'Zona A' },
   { matchday: 11, home: 'Estudiantes LP', away: 'Gimnasia y Esgrima Mendoza', date: '2026-09-29', time: '21:15', zone: 'Zona A' },
 
   // FECHA 12
@@ -217,7 +217,7 @@ const fixture = [
   { matchday: 12, home: 'Instituto', away: 'Boca Juniors', date: '2026-10-05', time: '19:30', zone: 'Zona A' },
   { matchday: 12, home: 'Rosario Central', away: 'Independiente Rivadavia', date: '2026-10-05', time: '21:45', zone: 'Zona B' },
   { matchday: 12, home: 'Platense', away: 'Argentinos Juniors', date: '2026-10-06', time: '19:00', zone: 'Zona A' },
-  { matchday: 12, home: 'Central Córdoba de Santiago', away: 'Estudiantes LP', date: '2026-10-06', time: '19:00', zone: 'Zona A' },
+  { matchday: 12, home: 'Central Cordoba', away: 'Estudiantes LP', date: '2026-10-06', time: '19:00', zone: 'Zona A' },
   { matchday: 12, home: 'Barracas Central', away: 'Huracán', date: '2026-10-06', time: '21:15', zone: 'Zona B' },
   { matchday: 12, home: 'San Lorenzo', away: 'Deportivo Riestra', date: '2026-10-06', time: '21:15', zone: 'Zona A' },
 
@@ -234,7 +234,7 @@ const fixture = [
   { matchday: 13, home: 'Atlético Tucumán', away: 'Rosario Central', date: '2026-10-19', time: '15:00', zone: 'Zona B' },
   { matchday: 13, home: 'Huracán', away: 'Gimnasia y Esgrima LP', date: '2026-10-19', time: '17:15', zone: 'Zona B' },
   { matchday: 13, home: 'Belgrano', away: 'River Plate', date: '2026-10-19', time: '19:30', zone: 'Zona B' },
-  { matchday: 13, home: 'Newell\'s Old Boys', away: 'Central Córdoba de Santiago', date: '2026-10-19', time: '21:45', zone: 'Zona A' },
+  { matchday: 13, home: 'Newell\'s Old Boys', away: 'Central Cordoba', date: '2026-10-19', time: '21:45', zone: 'Zona A' },
   { matchday: 13, home: 'Banfield', away: 'Argentinos Juniors', date: '2026-10-20', time: '19:00', zone: 'Zona B' },
   { matchday: 13, home: 'Defensa y Justicia', away: 'Instituto', date: '2026-10-20', time: '21:15', zone: 'Zona A' },
 
@@ -253,7 +253,7 @@ const fixture = [
   { matchday: 14, home: 'Gimnasia y Esgrima LP', away: 'Sarmiento', date: '2026-10-26', time: '21:45', zone: 'Zona B' },
   { matchday: 14, home: 'Talleres', away: 'Defensa y Justicia', date: '2026-10-27', time: '19:00', zone: 'Zona A' },
   { matchday: 14, home: 'Banfield', away: 'Lanús', date: '2026-10-27', time: '19:00', zone: 'Zona B' },
-  { matchday: 14, home: 'Central Córdoba de Santiago', away: 'Vélez Sarsfield', date: '2026-10-27', time: '21:15', zone: 'Zona A' },
+  { matchday: 14, home: 'Central Cordoba', away: 'Vélez Sarsfield', date: '2026-10-27', time: '21:15', zone: 'Zona A' },
 
   // FECHA 15 (Superclásico Boca-River)
   { matchday: 15, home: 'Newell\'s Old Boys', away: 'Unión', date: '2026-10-31', time: '15:00', zone: 'Zona A' },
@@ -266,7 +266,7 @@ const fixture = [
   { matchday: 15, home: 'Sarmiento', away: 'Rosario Central', date: '2026-11-01', time: '21:45', zone: 'Zona B' },
   { matchday: 15, home: 'Deportivo Riestra', away: 'Talleres', date: '2026-11-02', time: '15:00', zone: 'Zona A' },
   { matchday: 15, home: 'Belgrano', away: 'Barracas Central', date: '2026-11-02', time: '17:15', zone: 'Zona B' },
-  { matchday: 15, home: 'Platense', away: 'Central Córdoba de Santiago', date: '2026-11-02', time: '19:30', zone: 'Zona A' },
+  { matchday: 15, home: 'Platense', away: 'Central Cordoba', date: '2026-11-02', time: '19:30', zone: 'Zona A' },
   { matchday: 15, home: 'Independiente Rivadavia', away: 'Banfield', date: '2026-11-02', time: '21:45', zone: 'Zona B' },
   { matchday: 15, home: 'Vélez Sarsfield', away: 'San Lorenzo', date: '2026-11-03', time: '19:00', zone: 'Zona A' },
   { matchday: 15, home: 'Lanús', away: 'Gimnasia y Esgrima Mendoza', date: '2026-11-03', time: '19:00', zone: 'Zona A' },
@@ -276,7 +276,7 @@ const fixture = [
   { matchday: 16, home: 'Boca Juniors', away: 'Defensa y Justicia', date: '2026-11-07', time: '17:15', zone: 'Zona A' },
   { matchday: 16, home: 'Independiente', away: 'Deportivo Riestra', date: '2026-11-07', time: '19:30', zone: 'Zona A' },
   { matchday: 16, home: 'Rosario Central', away: 'Estudiantes de Río Cuarto', date: '2026-11-07', time: '21:45', zone: 'Zona B' },
-  { matchday: 16, home: 'Central Córdoba de Santiago', away: 'Lanús', date: '2026-11-08', time: '15:00', zone: 'Zona A' },
+  { matchday: 16, home: 'Central Cordoba', away: 'Lanús', date: '2026-11-08', time: '15:00', zone: 'Zona A' },
   { matchday: 16, home: 'Barracas Central', away: 'Racing Club', date: '2026-11-08', time: '17:15', zone: 'Zona B' },
   { matchday: 16, home: 'San Lorenzo', away: 'Platense', date: '2026-11-08', time: '19:30', zone: 'Zona A' },
   { matchday: 16, home: 'Talleres', away: 'Estudiantes LP', date: '2026-11-08', time: '21:45', zone: 'Zona A' },

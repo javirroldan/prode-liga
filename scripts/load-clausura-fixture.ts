@@ -15,7 +15,7 @@ const fixture = {
       ['Vélez Sarsfield', 'Instituto'],
       ['Platense', 'Unión'],
       ['Lanús', 'San Lorenzo'],
-      ['Gimnasia y Esgrima Mendoza', 'Central Córdoba de Santiago'],
+      ['Gimnasia y Esgrima Mendoza', 'Central Cordoba'],
     ],
     zonaB: [
       ['River Plate', 'Barracas Central'],
@@ -28,7 +28,7 @@ const fixture = {
     ],
   },
   2: {
-    interzonal: ['Central Córdoba de Santiago', 'Atlético Tucumán'],
+    interzonal: ['Central Cordoba', 'Atlético Tucumán'],
     zonaA: [
       ['San Lorenzo', 'Gimnasia y Esgrima Mendoza'],
       ['Unión', 'Lanús'],
@@ -57,7 +57,7 @@ const fixture = {
       ['Platense', 'Talleres'],
       ['Lanús', 'Instituto'],
       ['Gimnasia y Esgrima Mendoza', 'Unión'],
-      ['Central Córdoba de Santiago', 'San Lorenzo'],
+      ['Central Cordoba', 'San Lorenzo'],
     ],
     zonaB: [
       ['Aldosivi', 'Gimnasia y Esgrima LP'],
@@ -72,7 +72,7 @@ const fixture = {
   4: {
     interzonal: ['San Lorenzo', 'Huracán'],
     zonaA: [
-      ['Unión', 'Central Córdoba de Santiago'],
+      ['Unión', 'Central Cordoba'],
       ['Instituto', 'Gimnasia y Esgrima Mendoza'],
       ['Talleres', 'Lanús'],
       ['Independiente', 'Platense'],
@@ -98,7 +98,7 @@ const fixture = {
       ['Platense', 'Boca Juniors'],
       ['Lanús', 'Independiente'],
       ['Gimnasia y Esgrima Mendoza', 'Talleres'],
-      ['Central Córdoba de Santiago', 'Instituto'],
+      ['Central Cordoba', 'Instituto'],
       ['San Lorenzo', 'Unión'],
     ],
     zonaB: [
@@ -128,7 +128,7 @@ const fixture = {
       ['Atlético Tucumán', 'Instituto'],
       ['Estudiantes de Río Cuarto', 'San Lorenzo'],
       ['Gimnasia y Esgrima LP', 'Gimnasia y Esgrima Mendoza'],
-      ['Tigre', 'Central Córdoba de Santiago'],
+      ['Tigre', 'Central Cordoba'],
       ['Huracán', 'Deportivo Riestra'],
     ],
     extra: ['Newell\'s Old Boys', 'Banfield'],
@@ -137,7 +137,7 @@ const fixture = {
     interzonal: ['Unión', 'Sarmiento'],
     zonaA: [
       ['Instituto', 'San Lorenzo'],
-      ['Talleres', 'Central Córdoba de Santiago'],
+      ['Talleres', 'Central Cordoba'],
       ['Independiente', 'Gimnasia y Esgrima Mendoza'],
       ['Boca Juniors', 'Lanús'],
       ['Defensa y Justicia', 'Platense'],
@@ -161,7 +161,7 @@ const fixture = {
       ['Platense', 'Deportivo Riestra'],
       ['Lanús', 'Defensa y Justicia'],
       ['Gimnasia y Esgrima Mendoza', 'Boca Juniors'],
-      ['Central Córdoba de Santiago', 'Independiente'],
+      ['Central Cordoba', 'Independiente'],
       ['San Lorenzo', 'Talleres'],
       ['Unión', 'Instituto'],
     ],
@@ -180,7 +180,7 @@ const fixture = {
     zonaA: [
       ['Talleres', 'Unión'],
       ['Independiente', 'San Lorenzo'],
-      ['Boca Juniors', 'Central Córdoba de Santiago'],
+      ['Boca Juniors', 'Central Cordoba'],
       ['Defensa y Justicia', 'Gimnasia y Esgrima Mendoza'],
       ['Deportivo Riestra', 'Lanús'],
       ['Estudiantes LP', 'Platense'],
@@ -202,7 +202,7 @@ const fixture = {
       ['Platense', 'Newell\'s Old Boys'],
       ['Lanús', 'Estudiantes LP'],
       ['Gimnasia y Esgrima Mendoza', 'Deportivo Riestra'],
-      ['Central Córdoba de Santiago', 'Defensa y Justicia'],
+      ['Central Cordoba', 'Defensa y Justicia'],
       ['San Lorenzo', 'Boca Juniors'],
       ['Unión', 'Independiente'],
       ['Instituto', 'Talleres'],
@@ -223,7 +223,7 @@ const fixture = {
       ['Independiente', 'Instituto'],
       ['Boca Juniors', 'Unión'],
       ['Defensa y Justicia', 'San Lorenzo'],
-      ['Deportivo Riestra', 'Central Córdoba de Santiago'],
+      ['Deportivo Riestra', 'Central Cordoba'],
       ['Estudiantes LP', 'Gimnasia y Esgrima Mendoza'],
       ['Newell\'s Old Boys', 'Lanús'],
       ['Vélez Sarsfield', 'Platense'],
@@ -243,7 +243,7 @@ const fixture = {
     zonaA: [
       ['Lanús', 'Vélez Sarsfield'],
       ['Gimnasia y Esgrima Mendoza', 'Newell\'s Old Boys'],
-      ['Central Córdoba de Santiago', 'Estudiantes LP'],
+      ['Central Cordoba', 'Estudiantes LP'],
       ['San Lorenzo', 'Deportivo Riestra'],
       ['Unión', 'Defensa y Justicia'],
       ['Instituto', 'Boca Juniors'],
@@ -266,7 +266,7 @@ const fixture = {
       ['Defensa y Justicia', 'Instituto'],
       ['Deportivo Riestra', 'Unión'],
       ['Estudiantes LP', 'San Lorenzo'],
-      ['Newell\'s Old Boys', 'Central Córdoba de Santiago'],
+      ['Newell\'s Old Boys', 'Central Cordoba'],
       ['Vélez Sarsfield', 'Gimnasia y Esgrima Mendoza'],
       ['Platense', 'Lanús'],
     ],
@@ -284,7 +284,7 @@ const fixture = {
     interzonal: ['Banfield', 'Lanús'],
     zonaA: [
       ['Gimnasia y Esgrima Mendoza', 'Platense'],
-      ['Central Córdoba de Santiago', 'Vélez Sarsfield'],
+      ['Central Cordoba', 'Vélez Sarsfield'],
       ['San Lorenzo', 'Newell\'s Old Boys'],
       ['Unión', 'Estudiantes LP'],
       ['Instituto', 'Deportivo Riestra'],
@@ -309,7 +309,7 @@ const fixture = {
       ['Estudiantes LP', 'Instituto'],
       ['Newell\'s Old Boys', 'Unión'],
       ['Vélez Sarsfield', 'San Lorenzo'],
-      ['Platense', 'Central Córdoba de Santiago'],
+      ['Platense', 'Central Cordoba'],
       ['Lanús', 'Gimnasia y Esgrima Mendoza'],
     ],
     zonaB: [
@@ -325,7 +325,7 @@ const fixture = {
   16: {
     interzonal: ['Gimnasia y Esgrima Mendoza', 'Independiente Rivadavia'],
     zonaA: [
-      ['Central Córdoba de Santiago', 'Lanús'],
+      ['Central Cordoba', 'Lanús'],
       ['San Lorenzo', 'Platense'],
       ['Unión', 'Vélez Sarsfield'],
       ['Instituto', 'Newell\'s Old Boys'],

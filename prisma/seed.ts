@@ -29,7 +29,7 @@ async function main() {
     { homeTeam: "Argentinos Juniors", awayTeam: "Unión Santa Fe", matchday: 1, date: new Date("2026-02-18T19:00:00Z") },
     { homeTeam: "Tigre", awayTeam: "Platense", matchday: 1, date: new Date("2026-02-18T21:00:00Z") },
     { homeTeam: "Atlético Tucumán", awayTeam: "Sarmiento de Junín", matchday: 1, date: new Date("2026-02-18T23:00:00Z") },
-    { homeTeam: "Central Córdoba SdE", awayTeam: "Banfield", matchday: 1, date: new Date("2026-02-19T19:00:00Z") },
+    { homeTeam: "Central Cordoba", awayTeam: "Banfield", matchday: 1, date: new Date("2026-02-19T19:00:00Z") },
     { homeTeam: "Godoy Cruz", awayTeam: "Barracas Central", matchday: 1, date: new Date("2026-02-19T21:30:00Z") },
     { homeTeam: "Newell's Old Boys", awayTeam: "Rosario Central", matchday: 1, date: new Date("2026-02-19T21:00:00Z") },
     { homeTeam: "Estudiantes de Río Cuarto", awayTeam: "Aldosivi", matchday: 1, date: new Date("2026-02-19T19:00:00Z") },

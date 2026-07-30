@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Aldosivi",
+    "shortName": "ALD"
+  },
+  {
+    "name": "Argentinos Juniors",
+    "shortName": "ARG"
+  },
+  {
+    "name": "Atlético Tucumán",
+    "shortName": "ATU"
+  },
+  {
+    "name": "Banfield",
+    "shortName": "BAN"
+  },
+  {
+    "name": "Barracas Central",
+    "shortName": "BAR"
+  },
+  {
+    "name": "Belgrano",
+    "shortName": "BEL"
+  },
+  {
+    "name": "Boca Juniors",
+    "shortName": "BOC"
+  },
+  {
+    "name": "Central Cordoba",
+    "shortName": "CCO"
+  },
+  {
+    "name": "Defensa y Justicia",
+    "shortName": "DYJ"
+  },
+  {
+    "name": "Deportivo Riestra",
+    "shortName": "RIE"
+  },
+  {
+    "name": "Estudiantes de La Plata",
+    "shortName": "EST"
+  },
+  {
+    "name": "Estudiantes de Río Cuarto",
+    "shortName": "ERC"
+  },
+  {
+    "name": "Gimnasia y Esgrima La Plata",
+    "shortName": "GIM"
+  },
+  {
+    "name": "Gimnasia y Esgrima Mendoza",
+    "shortName": "GME"
+  },
+  {
+    "name": "Huracán",
+    "shortName": "HUR"
+  },
+  {
+    "name": "Independiente",
+    "shortName": "IND"
+  },
+  {
+    "name": "Independiente Rivadavia",
+    "shortName": "IRV"
+  },
+  {
+    "name": "Instituto",
+    "shortName": "INS"
+  },
+  {
+    "name": "Lanús",
+    "shortName": "LAN"
+  },
+  {
+    "name": "Newell's Old Boys",
+    "shortName": "NOB"
+  },
+  {
+    "name": "Platense",
+    "shortName": "PLA"
+  },
+  {
+    "name": "Racing Club",
+    "shortName": "RAC"
+  },
+  {
+    "name": "River Plate",
+    "shortName": "RIV"
+  },
+  {
+    "name": "Rosario Central",
+    "shortName": "ROS"
+  },
+  {
+    "name": "San Lorenzo",
+    "shortName": "SLO"
+  },
+  {
+    "name": "Sarmiento",
+    "shortName": "SAR"
+  },
+  {
+    "name": "Talleres",
+    "shortName": "TAL"
+  },
+  {
+    "name": "Tigre",
+    "shortName": "TIG"
+  },
+  {
+    "name": "Unión",
+    "shortName": "UNI"
+  },
+  {
+    "name": "Vélez Sarsfield",
+    "shortName": "VEL"
+  }
+]

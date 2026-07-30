@@ -97,7 +97,7 @@ BEGIN
     (gen_random_uuid()::text, t_id, 1, '2026-02-18T19:00:00Z', 'Argentinos Juniors', 'Union Santa Fe', 'SCHEDULED'),
     (gen_random_uuid()::text, t_id, 1, '2026-02-18T21:00:00Z', 'Tigre', 'Platense', 'SCHEDULED'),
     (gen_random_uuid()::text, t_id, 1, '2026-02-18T23:00:00Z', 'Atletico Tucuman', 'Sarmiento de Junin', 'SCHEDULED'),
-    (gen_random_uuid()::text, t_id, 1, '2026-02-19T19:00:00Z', 'Central Cordoba SdE', 'Banfield', 'SCHEDULED'),
+    (gen_random_uuid()::text, t_id, 1, '2026-02-19T19:00:00Z', 'Central Cordoba', 'Banfield', 'SCHEDULED'),
     (gen_random_uuid()::text, t_id, 1, '2026-02-19T21:00:00Z', 'Newells Old Boys', 'Rosario Central', 'SCHEDULED'),
     (gen_random_uuid()::text, t_id, 1, '2026-02-19T21:30:00Z', 'Godoy Cruz', 'Colon', 'SCHEDULED'),
     (gen_random_uuid()::text, t_id, 1, '2026-02-19T19:00:00Z', 'Estudiantes de Rio Cuarto', 'Aldosivi', 'SCHEDULED')

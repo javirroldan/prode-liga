@@ -89,7 +89,8 @@ src/
 ├── services/
 │   ├── scoring.ts    # calculatePoints() - returns 12, 7, 5, 2, or 0
 │   └── sync.ts       # calculateAndStorePoints() - batch recalculation
-└── middleware.ts     # Auth middleware
+├── middleware.ts     # Auth middleware
+└── equipos_liga_argentina_2026.json # Mapping nombre completo → abreviatura (3 letras) de los 30 equipos
 ```
 
 ## Prisma Schema (Key Models)
@@ -115,7 +116,8 @@ src/
 - PWA: install on Android shows "Crear acceso directo" instead of "Instalar app"
 - Admin mobile: cards con layout apilado (equipo+input por fila), botón Reiniciar arriba del selector
 - Team logos: solo en admin por ahora, 30 equipos mapeados en team-logos.ts
-- Nombres de equipos en DB pueden variar (ej: "Central Cordoba", "Talleres", "Unión", "Sarmiento")
+- Nombres de equipos normalizados. Mapping completo en equipos_liga_argentina_2026.json
+- Hay overrides en src/lib/team-abbrevs.ts para nombres que no matchean exacto entre DB y JSON
 
 ## Commands
 - `npm run dev` - Start dev server

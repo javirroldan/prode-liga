@@ -1,7 +1,7 @@
 import { getMatchdayPredictions } from "@/actions/predictions";
 import { getUserTournaments, leaveTournamentAction } from "@/actions/tournaments";
 import { getCurrentUser } from "@/actions/auth";
-import { getCurrentMatchday, getPendingMatchesFromOtherMatchdays } from "@/lib/match-utils";
+import { getCurrentMatchday, getPendingMatchesFromPreviousMatchday } from "@/lib/match-utils";
 import { MatchCard } from "@/components/fixture/match-card";
 import { JoinTournamentForm } from "@/components/shared/join-tournament-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,7 +46,7 @@ export default async function DashboardPage({
     : [];
 
   const pendingMatches = activeTournamentId && currentMatchday
-    ? await getPendingMatchesFromOtherMatchdays(activeTournamentId, currentMatchday, user.id)
+    ? await getPendingMatchesFromPreviousMatchday(activeTournamentId, currentMatchday, user.id)
     : [];
 
   const predictionsCount = matches.filter((m: { prediction: unknown }) => m.prediction).length;
@@ -201,13 +201,13 @@ export default async function DashboardPage({
               ))}
             </div>
 
-            {/* Pending matches from other matchdays */}
+            {/* Pending matches from previous matchday */}
             {pendingMatches.length > 0 && (
               <div className="mt-6">
                 <Card className="border-orange-500/30 bg-orange-500/5 backdrop-blur-sm">
                   <CardContent className="p-4">
                     <p className="mb-3 text-sm font-semibold text-orange-400">
-                      Partidos pendientes de otra fecha
+                      Partidos pendientes de FECHA {currentMatchday! - 1}
                     </p>
                     <div className="grid gap-4 md:grid-cols-2">
                       {pendingMatches.map((match: any) => (

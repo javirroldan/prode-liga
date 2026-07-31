@@ -23,10 +23,9 @@ export function isMatchLocked(matchDate: Date, time: string | null): boolean {
  * Determine which matchday to show based on pending matches.
  *
  * Logic:
- * 1. Find the oldest matchday that still has SCHEDULED or LIVE matches
- * 2. If none, show the last matchday (all finished)
- * 3. Handles overlapping matchdays (e.g., postponed matches from Fecha 2
- *    played after Fecha 3 starts)
+ * 1. Find matchdays that still have SCHEDULED or LIVE matches
+ * 2. Return the one with the highest matchday number (most recent)
+ * 3. If none, show the last matchday (all finished)
  */
 export async function getCurrentMatchday(tournamentId: string): Promise<number | null> {
   const matchdays = await prisma.match.groupBy({
@@ -45,7 +44,7 @@ export async function getCurrentMatchday(tournamentId: string): Promise<number |
     by: ["matchday"],
     where: { tournamentId, status: { in: ["SCHEDULED", "LIVE"] } },
     _count: { id: true },
-    orderBy: { matchday: "asc" },
+    orderBy: { matchday: "desc" },
   });
 
   if (matchdaysWithPending.length > 0) {
@@ -57,22 +56,24 @@ export async function getCurrentMatchday(tournamentId: string): Promise<number |
 }
 
 /**
- * Get matches from other matchdays that are still pending (SCHEDULED or LIVE).
+ * Get pending matches from the matchday immediately before the current one.
  * Used to show postponed matches that overlap with the current matchday.
- * Includes predictions for the current user.
+ * Only returns matches from matchday = currentMatchday - 1.
  */
-export async function getPendingMatchesFromOtherMatchdays(
+export async function getPendingMatchesFromPreviousMatchday(
   tournamentId: string,
   currentMatchday: number,
   userId?: string
 ) {
+  if (currentMatchday <= 1) return [];
+
   const matches = await prisma.match.findMany({
     where: {
       tournamentId,
+      matchday: currentMatchday - 1,
       status: { in: ["SCHEDULED", "LIVE"] },
-      NOT: { matchday: currentMatchday },
     },
-    orderBy: [{ matchday: "asc" }, { date: "asc" }],
+    orderBy: { date: "asc" },
   });
 
   if (!userId || matches.length === 0) {

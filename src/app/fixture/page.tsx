@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/actions/auth";
-import { getCurrentMatchday } from "@/lib/match-utils";
+import { getCurrentMatchday, getPendingMatchesFromOtherMatchdays } from "@/lib/match-utils";
 import { MatchCard } from "@/components/fixture/match-card";
 import { MatchdaySelector } from "@/components/fixture/matchday-selector";
 import { Card, CardContent } from "@/components/ui/card";
@@ -69,6 +69,12 @@ export default async function FixturePage({
     where: { userId: user.id, matchId: { in: matchIds } },
   });
 
+  const pendingMatches = await getPendingMatchesFromOtherMatchdays(
+    tournament.id,
+    currentMatchday,
+    user.id
+  );
+
   const totalMatches = matches.length;
   const finishedMatches = matches.filter((m) => m.status === "FINISHED").length;
   const allFinished = finishedMatches === totalMatches && totalMatches > 0;
@@ -80,7 +86,7 @@ export default async function FixturePage({
       <div>
         <h1 className="text-3xl font-bold text-white">Fixture</h1>
         <p className="text-white/50">
-          {tournament.name} - Fecha {currentMatchday}
+          {tournament.name} - FECHA {currentMatchday}
         </p>
       </div>
 
@@ -97,7 +103,7 @@ export default async function FixturePage({
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-semibold text-white">Fecha {currentMatchday}</h2>
+        <h2 className="text-xl font-semibold text-white">FECHA {currentMatchday}</h2>
         <MatchdaySelector currentMatchday={currentMatchday} totalMatchdays={totalMatchdays} baseUrl="/fixture" />
       </div>
 
@@ -153,6 +159,33 @@ export default async function FixturePage({
           })
         )}
       </div>
+
+      {/* Pending matches from other matchdays */}
+      {pendingMatches.length > 0 && (
+        <div>
+          <h2 className="mb-4 text-xl font-semibold text-white">Partidos pendientes de otra fecha</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {pendingMatches.map((match: any) => (
+              <MatchCard
+                key={match.id}
+                match={{
+                  ...match,
+                  date: match.date.toISOString(),
+                }}
+                prediction={
+                  match.prediction
+                    ? {
+                        homeGoals: match.prediction.homeGoals,
+                        awayGoals: match.prediction.awayGoals,
+                        points: match.prediction.points,
+                      }
+                    : null
+                }
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

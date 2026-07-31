@@ -20,18 +20,15 @@ export function isMatchLocked(matchDate: Date, time: string | null): boolean {
 }
 
 /**
- * Determine which matchday to show based on the date of the first match.
+ * Determine which matchday to show based on pending matches.
  *
  * Logic:
- * 1. Get all matchdays with their earliest match date, ordered by date
- * 2. Find the first matchday whose first match is in the future
- * 3. The "current" matchday is the one before that
- * 4. If no future matchday exists, show the last one
+ * 1. Find the oldest matchday that still has SCHEDULED or LIVE matches
+ * 2. If none, show the last matchday (all finished)
+ * 3. Handles overlapping matchdays (e.g., postponed matches from Fecha 2
+ *    played after Fecha 3 starts)
  */
 export async function getCurrentMatchday(tournamentId: string): Promise<number | null> {
-  const now = new Date();
-
-  // Get all matchdays with their earliest match date
   const matchdays = await prisma.match.groupBy({
     by: ["matchday"],
     where: { tournamentId },
@@ -43,28 +40,52 @@ export async function getCurrentMatchday(tournamentId: string): Promise<number |
     return null;
   }
 
-  // Find the first matchday whose first match is tomorrow or later
-  const startOfTomorrow = new Date();
-  startOfTomorrow.setHours(0, 0, 0, 0);
-  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+  // Find matchdays that still have pending (SCHEDULED or LIVE) matches
+  const matchdaysWithPending = await prisma.match.groupBy({
+    by: ["matchday"],
+    where: { tournamentId, status: { in: ["SCHEDULED", "LIVE"] } },
+    _count: { id: true },
+    orderBy: { matchday: "asc" },
+  });
 
-  const futureMatchday = matchdays.find(
-    (md) => md._min.date !== null && md._min.date >= startOfTomorrow
-  );
-
-  if (!futureMatchday) {
-    // No future matchday, show the last one
-    return matchdays[matchdays.length - 1].matchday;
+  if (matchdaysWithPending.length > 0) {
+    return matchdaysWithPending[0].matchday;
   }
 
-  // Get the index of the future matchday
-  const futureIndex = matchdays.indexOf(futureMatchday);
+  // No pending matches, show the last matchday
+  return matchdays[matchdays.length - 1].matchday;
+}
 
-  if (futureIndex === 0) {
-    // All matchdays are in the future, show the first one
-    return matchdays[0].matchday;
+/**
+ * Get matches from other matchdays that are still pending (SCHEDULED or LIVE).
+ * Used to show postponed matches that overlap with the current matchday.
+ * Includes predictions for the current user.
+ */
+export async function getPendingMatchesFromOtherMatchdays(
+  tournamentId: string,
+  currentMatchday: number,
+  userId?: string
+) {
+  const matches = await prisma.match.findMany({
+    where: {
+      tournamentId,
+      status: { in: ["SCHEDULED", "LIVE"] },
+      NOT: { matchday: currentMatchday },
+    },
+    orderBy: [{ matchday: "asc" }, { date: "asc" }],
+  });
+
+  if (!userId || matches.length === 0) {
+    return matches.map((m) => ({ ...m, prediction: null }));
   }
 
-  // The current matchday is the one before the future one
-  return matchdays[futureIndex - 1].matchday;
+  const matchIds = matches.map((m) => m.id);
+  const predictions = await prisma.prediction.findMany({
+    where: { userId, matchId: { in: matchIds } },
+  });
+
+  return matches.map((match) => ({
+    ...match,
+    prediction: predictions.find((p) => p.matchId === match.id) || null,
+  }));
 }

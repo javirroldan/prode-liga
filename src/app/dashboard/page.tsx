@@ -1,7 +1,7 @@
 import { getMatchdayPredictions } from "@/actions/predictions";
 import { getUserTournaments, leaveTournamentAction } from "@/actions/tournaments";
 import { getCurrentUser } from "@/actions/auth";
-import { getCurrentMatchday, getPendingMatchesFromOtherMatchdays } from "@/lib/match-utils";
+import { getCurrentMatchday } from "@/lib/match-utils";
 import { MatchCard } from "@/components/fixture/match-card";
 import { JoinTournamentForm } from "@/components/shared/join-tournament-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,10 +45,6 @@ export default async function DashboardPage({
     ? await getMatchdayPredictions(currentMatchday, activeTournamentId)
     : [];
 
-  const pendingMatches = activeTournamentId && currentMatchday
-    ? await getPendingMatchesFromOtherMatchdays(activeTournamentId, currentMatchday, user.id)
-    : [];
-
   const predictionsCount = matches.filter((m: { prediction: unknown }) => m.prediction).length;
 
   const totalPoints = tournaments.reduce(
@@ -68,7 +64,7 @@ export default async function DashboardPage({
         <p className="text-white/50">
           {activeTournamentId
             ? currentMatchday
-              ? `FECHA ${currentMatchday} de la Liga Profesional Argentina`
+              ? `Fecha ${currentMatchday} de la Liga Profesional Argentina`
               : "Cargando fecha..."
             : "Unite a un torneo para comenzar"}
         </p>
@@ -155,7 +151,7 @@ export default async function DashboardPage({
       {activeTournamentId && (
         <div>
           <h2 className="mb-4 text-xl font-semibold text-white">
-            {currentMatchday ? `FECHA ${currentMatchday}` : "Cargando..."}
+            {currentMatchday ? `Fecha ${currentMatchday}` : "Cargando..."}
           </h2>
 
           {!currentMatchday ? (
@@ -200,42 +196,6 @@ export default async function DashboardPage({
                 />
               ))}
             </div>
-
-            {/* Pending matches from other matchdays */}
-            {pendingMatches.length > 0 && (
-              <div className="mt-6">
-                <Card className="border-orange-500/30 bg-orange-500/5 backdrop-blur-sm">
-                  <CardContent className="p-4">
-                    <p className="mb-3 text-sm font-semibold text-orange-400">
-                      Partidos pendientes de otra fecha
-                    </p>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {pendingMatches.map((match: any) => (
-                        <MatchCard
-                          key={match.id}
-                          match={{
-                            id: match.id,
-                            homeTeam: match.homeTeam,
-                            awayTeam: match.awayTeam,
-                            homeGoals: match.homeGoals,
-                            awayGoals: match.awayGoals,
-                            date:
-                              match.date instanceof Date
-                                ? match.date.toISOString()
-                                : String(match.date),
-                            time: match.time,
-                            status: match.status,
-                            homeLogo: match.homeLogo,
-                            awayLogo: match.awayLogo,
-                          }}
-                          prediction={match.prediction}
-                        />
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
             </>
           )}
         </div>

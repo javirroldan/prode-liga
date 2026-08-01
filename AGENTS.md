@@ -49,6 +49,7 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Estadísticas**: Desglose de predicciones por tier (12, 7, 5, 2, 0) por usuario
 - **Escudos de equipos**: Logos PNG en `public/logos/`, mapping en `src/lib/team-logos.ts`, mostrados en admin
 - **Quitar usuarios del torneo**: Admin puede eliminar participantes desde admin/page.tsx
+- **Partidos postergados**: Admin puede marcar partidos como POSTPONED. Se muestran en banner separado al final del dashboard. Si el partido tiene fecha futura, queda bloqueado; cuando la fecha llega, se activa automáticamente y permite pronósticos (bloquea 1 hora antes del kickoff como cualquier partido)
 
 ## File Structure
 ```
@@ -59,7 +60,7 @@ src/
 │   ├── tournaments.ts # joinTournament, getTournamentRanking, getUserTournaments,
 │   │                   # getRankingWithTiebreak, getMatchdayRanking, getUserStats, getAvailableMatchdays
 │   └── admin.ts      # submitMatchResult, getMatchdayResults, createTournament,
-│                       # resetMatchday, setMatchStatus, updateLiveScore,
+│                       # resetMatchday, setMatchStatus (SCHEDULED/LIVE/POSTPONED), updateLiveScore,
 │                       # removeUserFromTournament, getTournamentParticipants
 ├── app/
 │   ├── page.tsx              # Landing page
@@ -114,6 +115,7 @@ src/
 - Supabase email confirmation should be disabled for easy registration
 - First admin user: `pachu` (pachu.hyper@gmail.com)
 - PWA: install on Android shows "Crear acceso directo" instead of "Instalar app"
+- Service Worker solo se registra en production (no en localhost) para evitar errores de ChunkLoadError en dev
 - Admin mobile: cards con layout apilado (equipo+input por fila), botón Reiniciar arriba del selector
 - Team logos: solo en admin por ahora, 30 equipos mapeados en team-logos.ts
 - Nombres de equipos normalizados. Mapping completo en equipos_liga_argentina_2026.json

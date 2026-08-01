@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { submitPrediction } from "@/actions/predictions";
 import { isMatchLocked } from "@/lib/match-utils";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Lock, Minus } from "lucide-react";
+import { CheckCircle2, Lock, Minus, CalendarX } from "lucide-react";
 
 interface MatchCardProps {
   match: {
@@ -109,6 +109,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
       className={cn(
         "border-white/10 bg-black/40 backdrop-blur-sm transition-all duration-300",
         isLive && "border-red-500/50 shadow-lg shadow-red-500/10",
+        match.status === "POSTPONED" && "border-orange-500/30",
         saved && "border-blue-400/50"
       )}
     >
@@ -206,7 +207,13 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
                 EN VIVO
               </span>
             )}
-            {!isFinished && !isLive && isLocked && (
+            {match.status === "POSTPONED" && (
+              <span className="inline-flex items-center gap-1 font-semibold text-orange-400">
+                <CalendarX className="h-3.5 w-3.5" />
+                Postergado
+              </span>
+            )}
+            {!isFinished && !isLive && match.status !== "POSTPONED" && isLocked && (
               <span className="inline-flex items-center gap-1 font-semibold text-yellow-400">
                 <Lock className="h-3 w-3" />
                 Bloqueado

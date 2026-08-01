@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MatchdaySelector } from "@/components/fixture/matchday-selector";
-import { CheckCircle2, Lock, Save, AlertCircle, Radio } from "lucide-react";
+import { CheckCircle2, Lock, Save, AlertCircle, Radio, CalendarX } from "lucide-react";
 
 interface Match {
   id: string;
@@ -70,7 +70,16 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
     if (!match) return;
 
     const wasFinished = match.status === "FINISHED";
-    const newStatus = match.status === "LIVE" ? "SCHEDULED" : "LIVE";
+    const wasPostponed = match.status === "POSTPONED";
+    let newStatus: "SCHEDULED" | "LIVE";
+    
+    if (match.status === "LIVE") {
+      newStatus = "SCHEDULED";
+    } else if (wasPostponed) {
+      newStatus = "SCHEDULED";
+    } else {
+      newStatus = "LIVE";
+    }
 
     startTransition(async () => {
       const result = await setMatchStatus(matchId, newStatus);
@@ -81,13 +90,39 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
           type: "success",
           text: wasFinished
             ? "Partido reabierto, resultado y puntos reseteados"
-            : newStatus === "LIVE"
-              ? "Partido marcado como en vivo"
-              : "Partido vuelto a pendiente",
+            : wasPostponed
+              ? "Partido reactivado"
+              : newStatus === "LIVE"
+                ? "Partido marcado como en vivo"
+                : "Partido vuelto a pendiente",
         });
         setLocalMatches((prev) =>
           prev.map((m) =>
             m.id === matchId ? { ...m, status: newStatus, homeGoals: null, awayGoals: null } : m
+          )
+        );
+      }
+    });
+  };
+
+  const handlePostpone = (matchId: string) => {
+    const match = localMatches.find((m) => m.id === matchId);
+    if (!match) return;
+
+    if (!confirm(`¿Postergar el partido ${match.homeTeam} vs ${match.awayTeam}?`)) return;
+
+    startTransition(async () => {
+      const result = await setMatchStatus(matchId, "POSTPONED");
+      if (result?.error) {
+        setMessage({ type: "error", text: result.error });
+      } else {
+        setMessage({
+          type: "success",
+          text: "Partido postergado",
+        });
+        setLocalMatches((prev) =>
+          prev.map((m) =>
+            m.id === matchId ? { ...m, status: "POSTPONED", homeGoals: null, awayGoals: null } : m
           )
         );
       }
@@ -174,7 +209,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
             <Card
               key={match.id}
               className={`border ${
-                isFinished ? "border-green-500/30 bg-green-500/5" : "border-white/10 bg-black/40"
+                isFinished ? "border-green-500/30 bg-green-500/5" : match.status === "POSTPONED" ? "border-orange-500/30 bg-orange-500/5" : "border-white/10 bg-black/40"
               } backdrop-blur-sm`}
             >
               <CardContent className="p-4">
@@ -189,6 +224,10 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                   ) : isLive ? (
                     <Badge variant="outline" className="shrink-0 border-red-500/50 text-red-400 text-xs animate-pulse">
                       <Radio className="mr-1 h-3 w-3" /> En vivo
+                    </Badge>
+                  ) : match.status === "POSTPONED" ? (
+                    <Badge variant="outline" className="shrink-0 border-orange-500/50 text-orange-400 text-xs">
+                      <CalendarX className="mr-1 h-3 w-3" /> Postergado
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="shrink-0 border-yellow-500/50 text-yellow-400 text-xs">
@@ -281,15 +320,39 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                       {isPending ? "Guardando..." : isFinished ? "Corregir resultado" : "Guardar resultado"}
                     </Button>
                   )}
+                  {match.status !== "POSTPONED" && (
+                    <Button
+                      onClick={() => handleToggleLive(match.id)}
+                      disabled={isPending}
+                      variant={isLive ? "destructive" : "outline"}
+                      size="sm"
+                      className={`w-full sm:w-auto ${isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}`}
+                    >
+                      <Radio className="mr-1 h-4 w-4" />
+                      {isFinished ? "Reabrir partido" : isLive ? "Quitar en vivo" : "En vivo"}
+                    </Button>
+                  )}
+                  {match.status === "POSTPONED" && (
+                    <Button
+                      onClick={() => handleToggleLive(match.id)}
+                      disabled={isPending}
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10"
+                    >
+                      <Radio className="mr-1 h-4 w-4" />
+                      Reactivar partido
+                    </Button>
+                  )}
                   <Button
-                    onClick={() => handleToggleLive(match.id)}
-                    disabled={isPending}
-                    variant={isLive ? "destructive" : "outline"}
+                    onClick={() => handlePostpone(match.id)}
+                    disabled={isPending || match.status === "POSTPONED"}
+                    variant="outline"
                     size="sm"
-                    className={`w-full sm:w-auto ${isLive ? "" : "border-red-500/50 text-red-400 hover:bg-red-500/10"}`}
+                    className={`w-full sm:w-auto ${match.status === "POSTPONED" ? "border-orange-500/50 text-orange-400" : "border-orange-500/50 text-orange-400 hover:bg-orange-500/10"}`}
                   >
-                    <Radio className="mr-1 h-4 w-4" />
-                    {isFinished ? "Reabrir partido" : isLive ? "Quitar en vivo" : "En vivo"}
+                    <CalendarX className="mr-1 h-4 w-4" />
+                    {match.status === "POSTPONED" ? "Postergado" : "Postergar"}
                   </Button>
                 </div>
 

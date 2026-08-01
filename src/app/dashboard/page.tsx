@@ -7,7 +7,8 @@ import { JoinTournamentForm } from "@/components/shared/join-tournament-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
-import { Trophy, Target, TrendingUp, LogOut, Clock } from "lucide-react";
+import { Trophy, Target, TrendingUp, LogOut, Clock, CalendarX } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function DashboardPage({
@@ -53,6 +54,34 @@ export default async function DashboardPage({
   );
 
   const allFinished = matches.length > 0 && matches.every((m: { status: string }) => m.status === "FINISHED");
+
+  // Get postponed matches from previous matchdays
+  const postponedMatches = activeTournamentId && currentMatchday
+    ? await prisma.match.findMany({
+        where: {
+          tournamentId: activeTournamentId,
+          status: "POSTPONED",
+          matchday: { lt: currentMatchday },
+        },
+        orderBy: { date: "asc" },
+      })
+    : [];
+
+  // Get user predictions for postponed matches
+  const postponedMatchIds = postponedMatches.map((m) => m.id);
+  const postponedPredictions = postponedMatchIds.length > 0
+    ? await prisma.prediction.findMany({
+        where: {
+          userId: user.id,
+          matchId: { in: postponedMatchIds },
+        },
+      })
+    : [];
+
+  const postponedWithPredictions = postponedMatches.map((match) => ({
+    ...match,
+    prediction: postponedPredictions.find((p) => p.matchId === match.id) || null,
+  }));
 
   return (
     <div className="space-y-8">
@@ -198,6 +227,45 @@ export default async function DashboardPage({
             </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* Postponed Matches from Previous Matchdays */}
+      {postponedWithPredictions.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <CalendarX className="h-5 w-5 text-orange-400" />
+            <h2 className="text-xl font-semibold text-orange-400">
+              Partidos pendientes de otras fechas
+            </h2>
+          </div>
+          <Card className="border-orange-500/30 bg-orange-500/5 backdrop-blur-sm">
+            <CardContent className="p-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                {postponedWithPredictions.map((match: any) => (
+                  <MatchCard
+                    key={match.id}
+                    match={{
+                      id: match.id,
+                      homeTeam: match.homeTeam,
+                      awayTeam: match.awayTeam,
+                      homeGoals: match.homeGoals,
+                      awayGoals: match.awayGoals,
+                      date:
+                        match.date instanceof Date
+                          ? match.date.toISOString()
+                          : String(match.date),
+                      time: match.time,
+                      status: match.status,
+                      homeLogo: match.homeLogo,
+                      awayLogo: match.awayLogo,
+                    }}
+                    prediction={match.prediction}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 

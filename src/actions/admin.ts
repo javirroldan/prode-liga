@@ -119,7 +119,7 @@ export async function getMatchdayResults(matchday: number) {
   });
 }
 
-export async function setMatchStatus(matchId: string, status: "SCHEDULED" | "LIVE") {
+export async function setMatchStatus(matchId: string, status: "SCHEDULED" | "LIVE" | "POSTPONED") {
   await requireAdmin();
 
   const match = await prisma.match.findUnique({ where: { id: matchId } });

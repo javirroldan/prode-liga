@@ -183,51 +183,56 @@ export async function submitMatchResult(
   homeGoals: number,
   awayGoals: number
 ) {
-  const user = await requireAdmin();
+  try {
+    const user = await requireAdmin();
 
-  const match = await prisma.match.findUnique({ where: { id: matchId } });
-  if (!match) return { error: "Partido no encontrado" };
+    const match = await prisma.match.findUnique({ where: { id: matchId } });
+    if (!match) return { error: "Partido no encontrado" };
 
-  const wasFinished = match.status === "FINISHED";
+    const wasFinished = match.status === "FINISHED";
 
-  if (homeGoals < 0 || awayGoals < 0) {
-    return { error: "Los goles no pueden ser negativos" };
-  }
+    if (homeGoals < 0 || awayGoals < 0) {
+      return { error: "Los goles no pueden ser negativos" };
+    }
 
-  // Update match with result
-  await prisma.match.update({
-    where: { id: matchId },
-    data: {
-      homeGoals,
-      awayGoals,
-      status: "FINISHED",
-    },
-  });
-
-  // Calculate points for all predictions on this match
-  const predictions = await prisma.prediction.findMany({
-    where: { matchId },
-  });
-
-  for (const pred of predictions) {
-    const points = calculatePoints(
-      { homeGoals: pred.homeGoals, awayGoals: pred.awayGoals },
-      { homeGoals, awayGoals }
-    );
-
-    await prisma.prediction.update({
-      where: { id: pred.id },
-      data: { points },
+    // Update match with result
+    await prisma.match.update({
+      where: { id: matchId },
+      data: {
+        homeGoals,
+        awayGoals,
+        status: "FINISHED",
+      },
     });
+
+    // Calculate points for all predictions on this match
+    const predictions = await prisma.prediction.findMany({
+      where: { matchId },
+    });
+
+    for (const pred of predictions) {
+      const points = calculatePoints(
+        { homeGoals: pred.homeGoals, awayGoals: pred.awayGoals },
+        { homeGoals, awayGoals }
+      );
+
+      await prisma.prediction.update({
+        where: { id: pred.id },
+        data: { points },
+      });
+    }
+
+    // Update total points for all participants in the tournament
+    await updateParticipantPoints(match.tournamentId);
+
+    revalidatePath("/admin");
+    revalidatePath("/ranking");
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Error en submitMatchResult:", error);
+    return { error: "Error al guardar el resultado. Intentá de nuevo." };
   }
-
-  // Update total points for all participants in the tournament
-  await updateParticipantPoints(match.tournamentId);
-
-  revalidatePath("/admin");
-  revalidatePath("/ranking");
-  revalidatePath("/dashboard");
-  return { success: true };
 }
 
 async function updateParticipantPoints(tournamentId: string) {

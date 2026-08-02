@@ -14,7 +14,7 @@ export function isMatchLocked(matchDate: Date, time: string | null): boolean {
   }
 
   const diff = matchDateTime.getTime() - now.getTime();
-  const oneHourMs = 60 * 60 * 1000;
+  const oneHourMs = 30 * 60 * 1000;
 
   return diff <= oneHourMs;
 }

@@ -49,18 +49,22 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
     }
 
     startTransition(async () => {
-      const result = await submitMatchResult(matchId, match.homeGoals!, match.awayGoals!);
-      if (result?.error) {
-        setMessage({ type: "error", text: result.error });
-      } else {
-        setMessage({ type: "success", text: match.status === "FINISHED" ? "Resultado corregido y puntos recalculados" : "Resultado guardado y puntos calculados" });
-        setLocalMatches((prev) =>
-          prev.map((m) =>
-            m.id === matchId
-              ? { ...m, status: "FINISHED", homeGoals: match.homeGoals, awayGoals: match.awayGoals }
-              : m
-          )
-        );
+      try {
+        const result = await submitMatchResult(matchId, match.homeGoals!, match.awayGoals!);
+        if (result?.error) {
+          setMessage({ type: "error", text: result.error });
+        } else {
+          setMessage({ type: "success", text: match.status === "FINISHED" ? "Resultado corregido y puntos recalculados" : "Resultado guardado y puntos calculados" });
+          setLocalMatches((prev) =>
+            prev.map((m) =>
+              m.id === matchId
+                ? { ...m, status: "FINISHED", homeGoals: match.homeGoals, awayGoals: match.awayGoals }
+                : m
+            )
+          );
+        }
+      } catch {
+        setMessage({ type: "error", text: "Error al conectar con el servidor" });
       }
     });
   };

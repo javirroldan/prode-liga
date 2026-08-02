@@ -42,19 +42,32 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
   };
 
   const handleSubmit = (matchId: string) => {
+    console.log("[DEBUG handleSubmit] matchId:", matchId);
     const match = localMatches.find((m) => m.id === matchId);
+    console.log("[DEBUG handleSubmit] match found:", !!match, "homeGoals:", match?.homeGoals, "awayGoals:", match?.awayGoals, "status:", match?.status);
     if (!match || match.homeGoals === null || match.awayGoals === null) {
+      console.log("[DEBUG handleSubmit] ABORT: goals are null");
       setMessage({ type: "error", text: "Carga los goles de ambos equipos" });
       return;
     }
 
+    if (isNaN(match.homeGoals) || isNaN(match.awayGoals)) {
+      console.log("[DEBUG handleSubmit] ABORT: goals are NaN");
+      setMessage({ type: "error", text: "Los goles deben ser números válidos" });
+      return;
+    }
+
+    console.log("[DEBUG handleSubmit] calling submitMatchResult...");
     startTransition(async () => {
       try {
         const result = await submitMatchResult(matchId, match.homeGoals!, match.awayGoals!);
+        console.log("[DEBUG handleSubmit] result:", JSON.stringify(result));
         if (result?.error) {
           setMessage({ type: "error", text: result.error });
+          alert("ERROR: " + result.error);
         } else {
           setMessage({ type: "success", text: match.status === "FINISHED" ? "Resultado corregido y puntos recalculados" : "Resultado guardado y puntos calculados" });
+          alert("OK: Resultado guardado");
           setLocalMatches((prev) =>
             prev.map((m) =>
               m.id === matchId
@@ -63,8 +76,10 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
             )
           );
         }
-      } catch {
+      } catch (err) {
+        console.error("[DEBUG handleSubmit] CATCH error:", err);
         setMessage({ type: "error", text: "Error al conectar con el servidor" });
+        alert("CATCH ERROR: " + String(err));
       }
     });
   };

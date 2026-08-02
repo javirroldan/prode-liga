@@ -37,7 +37,7 @@ export async function submitPrediction(formData: FormData) {
   }
 
   if (isMatchLocked(match.date, match.time)) {
-    return { error: "El pronóstico se bloquea 1 hora antes del inicio del partido" };
+    return { error: "El pronóstico se bloquea 30 minutos antes del inicio del partido" };
   }
 
   // Upsert prediction

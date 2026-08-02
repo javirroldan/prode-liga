@@ -10,13 +10,13 @@ export function isMatchLocked(matchDate: Date, time: string | null): boolean {
 
   if (time) {
     const [hours, minutes] = time.split(":").map(Number);
-    matchDateTime.setHours(hours, minutes, 0, 0);
+    matchDateTime.setUTCHours(hours + 3, minutes, 0, 0);
   }
 
   const diff = matchDateTime.getTime() - now.getTime();
-  const oneHourMs = 30 * 60 * 1000;
+  const thirtyMinutesMs = 30 * 60 * 1000;
 
-  return diff <= oneHourMs;
+  return diff <= thirtyMinutesMs;
 }
 
 /**

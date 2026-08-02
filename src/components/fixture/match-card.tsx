@@ -71,6 +71,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isFinished = match.status === "FINISHED";
   const isLive = match.status === "LIVE";
@@ -90,6 +91,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
   async function handleSubmit() {
     if (saving || isLocked) return;
     setSaving(true);
+    setError(null);
 
     const formData = new FormData();
     formData.append("matchId", match.id);
@@ -97,7 +99,9 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
     formData.append("awayGoals", awayGoals);
 
     const result = await submitPrediction(formData);
-    if (result.success) {
+    if (result.error) {
+      setError(result.error);
+    } else if (result.success) {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     }
@@ -234,6 +238,10 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
             )}
           </div>
         </div>
+
+        {error && (
+          <p className="text-xs text-red-400 mt-1">{error}</p>
+        )}
       </CardContent>
     </Card>
   );

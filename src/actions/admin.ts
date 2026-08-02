@@ -184,12 +184,9 @@ export async function submitMatchResult(
   awayGoals: number
 ) {
   try {
-    console.log("[DEBUG submitMatchResult] matchId:", matchId, "homeGoals:", homeGoals, "awayGoals:", awayGoals);
     const user = await requireAdmin();
-    console.log("[DEBUG submitMatchResult] admin user:", user?.id);
 
     const match = await prisma.match.findUnique({ where: { id: matchId } });
-    console.log("[DEBUG submitMatchResult] match found:", !!match, match?.homeTeam, "vs", match?.awayTeam, "status:", match?.status);
     if (!match) return { error: "Partido no encontrado" };
 
     const wasFinished = match.status === "FINISHED";
@@ -199,7 +196,6 @@ export async function submitMatchResult(
     }
 
     // Update match with result
-    console.log("[DEBUG submitMatchResult] updating match...");
     await prisma.match.update({
       where: { id: matchId },
       data: {
@@ -208,13 +204,11 @@ export async function submitMatchResult(
         status: "FINISHED",
       },
     });
-    console.log("[DEBUG submitMatchResult] match updated OK");
 
     // Calculate points for all predictions on this match
     const predictions = await prisma.prediction.findMany({
       where: { matchId },
     });
-    console.log("[DEBUG submitMatchResult] predictions count:", predictions.length);
 
     for (const pred of predictions) {
       const points = calculatePoints(
@@ -227,20 +221,16 @@ export async function submitMatchResult(
         data: { points },
       });
     }
-    console.log("[DEBUG submitMatchResult] predictions updated OK");
 
     // Update total points for all participants in the tournament
-    console.log("[DEBUG submitMatchResult] updating participant points for tournament:", match.tournamentId);
     await updateParticipantPoints(match.tournamentId);
-    console.log("[DEBUG submitMatchResult] participant points updated OK");
 
     revalidatePath("/admin");
     revalidatePath("/ranking");
     revalidatePath("/dashboard");
-    console.log("[DEBUG submitMatchResult] DONE - returning success");
     return { success: true };
   } catch (error) {
-    console.error("[DEBUG submitMatchResult] CATCH:", error);
+    console.error("Error en submitMatchResult:", error);
     return { error: "Error al guardar el resultado. Intentá de nuevo." };
   }
 }

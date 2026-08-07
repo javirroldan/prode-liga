@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { submitPrediction } from "@/actions/predictions";
 import { isMatchLocked } from "@/lib/match-utils";
 import { getTeamLogo } from "@/lib/team-logos";
+import { getTeamDisplayName } from "@/lib/team-display";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Lock, Minus, CalendarX } from "lucide-react";
 
@@ -137,7 +138,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
                 />
               )}
               <span className="text-right text-xs font-semibold text-white/80 break-words">
-                {match.homeTeam}
+                {getTeamDisplayName(match.homeTeam)}
               </span>
             </div>
 
@@ -204,7 +205,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
                 />
               )}
               <span className="text-left text-xs font-semibold text-white/80 break-words">
-                {match.awayTeam}
+                {getTeamDisplayName(match.awayTeam)}
               </span>
             </div>
           </div>

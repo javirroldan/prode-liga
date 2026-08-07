@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { submitMatchResult, setMatchStatus, updateLiveScore, resetMatchday } from "@/actions/admin";
 import { getTeamLogo } from "@/lib/team-logos";
+import { getTeamDisplayName } from "@/lib/team-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -256,7 +257,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                         />
                       )}
                       <span className="font-medium text-sm text-white truncate">
-                        {match.homeTeam}
+                        {getTeamDisplayName(match.homeTeam)}
                       </span>
                     </div>
                     <Input
@@ -279,7 +280,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                         />
                       )}
                       <span className="font-medium text-sm text-white truncate">
-                        {match.awayTeam}
+                        {getTeamDisplayName(match.awayTeam)}
                       </span>
                     </div>
                     <Input

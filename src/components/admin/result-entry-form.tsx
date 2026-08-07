@@ -252,7 +252,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                         <img
                           src={getTeamLogo(match.homeTeam)!}
                           alt=""
-                          className="h-6 w-6 shrink-0 rounded-sm"
+                          className="h-8 w-8 shrink-0 rounded-sm"
                         />
                       )}
                       <span className="font-medium text-sm text-white truncate">
@@ -275,7 +275,7 @@ export function ResultEntryForm({ matches, currentMatchday }: { matches: Match[]
                         <img
                           src={getTeamLogo(match.awayTeam)!}
                           alt=""
-                          className="h-6 w-6 shrink-0 rounded-sm"
+                          className="h-8 w-8 shrink-0 rounded-sm"
                         />
                       )}
                       <span className="font-medium text-sm text-white truncate">

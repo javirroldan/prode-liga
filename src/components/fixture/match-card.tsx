@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { submitPrediction } from "@/actions/predictions";
 import { isMatchLocked } from "@/lib/match-utils";
+import { getTeamLogo } from "@/lib/team-logos";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Lock, Minus, CalendarX } from "lucide-react";
 
@@ -88,6 +89,9 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
   const gotPoints = isFinished && (prediction?.points ?? 0) > 0;
   const gotZero = isFinished && (prediction?.points ?? 0) === 0 && prediction;
 
+  const homeLogo = match.homeLogo ?? getTeamLogo(match.homeTeam);
+  const awayLogo = match.awayLogo ?? getTeamLogo(match.awayTeam);
+
   async function handleSubmit() {
     if (saving || isLocked) return;
     setSaving(true);
@@ -124,9 +128,18 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
 
           <div className="flex-1 flex items-center gap-2 min-w-0">
             {/* Home team */}
-            <span className="flex-1 text-right text-xs font-semibold text-white/80 break-words">
-              {match.homeTeam}
-            </span>
+            <div className="flex-1 flex flex-col items-end gap-1 min-w-0">
+              {homeLogo && (
+                <img
+                  src={homeLogo}
+                  alt=""
+                  className="h-12 w-12 shrink-0 rounded-sm"
+                />
+              )}
+              <span className="text-right text-xs font-semibold text-white/80 break-words">
+                {match.homeTeam}
+              </span>
+            </div>
 
             {/* Score */}
             {isFinished || isLive ? (
@@ -182,9 +195,18 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
             )}
 
             {/* Away team */}
-            <span className="flex-1 text-left text-xs font-semibold text-white/80 break-words">
-              {match.awayTeam}
-            </span>
+            <div className="flex-1 flex flex-col items-start gap-1 min-w-0">
+              {awayLogo && (
+                <img
+                  src={awayLogo}
+                  alt=""
+                  className="h-12 w-12 shrink-0 rounded-sm"
+                />
+              )}
+              <span className="text-left text-xs font-semibold text-white/80 break-words">
+                {match.awayTeam}
+              </span>
+            </div>
           </div>
         </div>
 

@@ -32,7 +32,7 @@ Credentials are in `.env.local` and Vercel environment variables.
 - Máximo 12 puntos por partido
 
 ## Key Features
-- **Fixture real**: Clausura 2026, 16 fechas, 15 partidos por fecha (1 interzonal + 7 zona A + 7 zona B), 30 equipos
+- **Fixture real**: Clausura 2026, 16 fechas, 15 partidos por fecha (1 interzonal + 7 zona A + 7 zona B), 30 equipos. Fechas 4-7 con días/horarios oficiales de AFA (agenda publicada 02/08/2026); fechas 8-16 con fechas estimadas semanales hasta que AFA confirme
 - **Carga manual de resultados**: Admin ingresa goles
 - **Corrección de resultados**: Matches FINISHED se pueden re-editar (el admin puede corregir goles)
 - **Reabrir partidos**: Admin puede cambiar status FINISHED → LIVE (resetea goles y puntos)
@@ -92,6 +92,11 @@ src/
 │   └── sync.ts       # calculateAndStorePoints() - batch recalculation
 ├── middleware.ts     # Auth middleware
 └── equipos_liga_argentina_2026.json # Mapping nombre completo → abreviatura (3 letras) de los 30 equipos
+
+scripts/
+├── load-real-fixture.ts    # Fuente del fixture 2026 (fechas 4-7 reales AFA, 8-16 estimadas). BORRA predicciones y partidos al correr
+├── load-clausura-fixture.ts # (obsoleto) Fixture genérico, todos los partidos del matchday el mismo día
+└── update-fixture-dates.ts  # Actualiza fecha/hora de partidos existentes SIN borrar (matchea por matchday + homeTeam + awayTeam)
 ```
 
 ## Prisma Schema (Key Models)
@@ -120,9 +125,12 @@ src/
 - Team logos: solo en admin por ahora, 30 equipos mapeados en team-logos.ts
 - Nombres de equipos normalizados. Mapping completo en equipos_liga_argentina_2026.json
 - Hay overrides en src/lib/team-abbrevs.ts para nombres que no matchean exacto entre DB y JSON
+- Fechas 8-16 del fixture tienen fechas estimadas semanales. Cuando AFA confirme la agenda, corregir con scripts/update-fixture-dates.ts
+- scripts/load-real-fixture.ts BORRA todas las predicciones y partidos al ejecutarse. Para corregir fechas usar SIEMPRE update-fixture-dates.ts, nunca recargar el fixture completo
 
 ## Commands
 - `npm run dev` - Start dev server
 - `npm run build` - Production build (must pass before deploy)
 - `npx prisma generate` - Regenerate Prisma client
 - `npx prisma db push` - Sync schema to DB (needs both DATABASE_URL and DIRECT_URL env vars)
+- `node --env-file=.env.local scripts/update-fixture-dates.ts` - Actualizar días/horarios de partidos según agenda AFA (in-place, conserva resultados y pronósticos)

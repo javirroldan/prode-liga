@@ -34,7 +34,11 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Normalización de nombres**: 11 overrides BeSoccer→DB en `src/lib/besoccer.ts` (ej: `Talleres Córdoba`→`Talleres`, `Atl. Tucumán`→`Atlético Tucumán`, `CA Huracán`→`Huracán`)
 - **Placeholder**: fechas 8-16 aún no confirmadas por AFA; BeSoccer también las trae estimadas (todos los partidos con la misma fecha/hora 16:00). El sync detecta esto y NO toca fechas existentes
 - **Pruebas**: `node --env-file=.env.local scripts/test-besoccer.ts [country] [leagueId] [round] [year]` (no toca la DB)
-- **Sync**: `node --env-file=.env.local scripts/sync-from-besoccer.ts [roundStart] [roundEnd]` (in-place, NO borra; sin args sincroniza 1-16). Cron automático: `app/api/cron/sync-besoccer` (Vercel, cada 5 min, jornadas current-1..current+2, requiere header `Authorization: Bearer $CRON_SECRET`)
+- **Sync manual**: `node --env-file=.env.local scripts/sync-from-besoccer.ts [roundStart] [roundEnd]` (in-place, NO borra; sin args sincroniza 1-16)
+- **Sync automático**: GitHub Actions (`.github/workflows/sync-besoccer.yml`, repo público = gratis, NO cron de Vercel: plan Hobby solo permite 1 cron/día). Llaman al endpoint `app/api/cron/sync-besoccer` con header `Authorization: Bearer $CRON_SECRET` (secret en GitHub Actions):
+  - **`*/15 * * * *`** → `?mode=results` (default): rondas current-1..current+1, pero SOLO consulta BeSoccer si hay partidos a **±3h del kickoff** (`window:false` = 0 peticiones). Resultados auto ~15 min post pitazo
+  - **`0 8 * * *`** (1x/día) → `?mode=fixture`: rondas current+1..current+2 sin límite de ventana (2 peticiones) para captar fechas de agenda AFA
+- **Cuota BeSoccer**: 500 peticiones/día (resetea a las 0h). Consumo con este diseño: ~2/día sin partidos, ~40-70/día con partidos. No usar el endpoint en modo results fuera de ventana para no gastar cuota
 
 ## Scoring Rules
 - 12 puntos: resultado exacto (badge amarillo)
@@ -46,7 +50,7 @@ Credentials are in `.env.local` and Vercel environment variables.
 
 ## Key Features
 - **Fixture real**: Clausura 2026, 16 fechas, 15 partidos por fecha (1 interzonal + 7 zona A + 7 zona B), 30 equipos. Fechas 4-7 con días/horarios oficiales de AFA (agenda publicada 02/08/2026); fechas 8-16 con fechas estimadas semanales hasta que AFA confirme
-- **Auto-sync BeSoccer**: cron cada 5 min (`app/api/cron/sync-besoccer`). Actualiza fecha/hora (solo si hay horarios reales, no placeholders), goles y estado FINISHED desde BeSoccer, y recalcula puntos. Los partidos con `manualResult=true` (editados/reabiertos por admin) no se sobreescriben
+- **Auto-sync BeSoccer**: GitHub Actions cada 15 min durante la ventana de partidos (±3h del kickoff) + 1 pasada diaria de fechas. Actualiza fecha/hora (solo si hay horarios reales, no placeholders), goles y estado FINISHED desde BeSoccer, y recalcula puntos. Los partidos con `manualResult=true` (editados/reabiertos por admin) no se sobreescriben
 - **Carga manual de resultados**: Admin ingresa goles
 - **Corrección de resultados**: Matches FINISHED se pueden re-editar (el admin puede corregir goles)
 - **Reabrir partidos**: Admin puede cambiar status FINISHED → LIVE (resetea goles y puntos)
@@ -87,7 +91,7 @@ src/
 │   ├── fixture/page.tsx      # Fixture browser
 │   ├── ranking/page.tsx      # Leaderboard with tabs (General / Por Fecha / Estadísticas)
 │   ├── admin/page.tsx        # Admin panel (result entry)
-│   └── api/cron/sync-besoccer/route.ts # Cron Vercel (cada 5 min) sync desde BeSoccer
+│   └── api/cron/sync-besoccer/route.ts # Sync desde BeSoccer (?mode=results ventana ±3h | ?mode=fixture fechas futuras)
 ├── components/
 │   ├── ui/           # Reusable UI components (button, card, input, etc.)
 │   ├── fixture/      # match-card.tsx (with color-coded PointsBadge), matchday-selector.tsx
@@ -114,6 +118,9 @@ scripts/
 ├── load-clausura-fixture.ts # (obsoleto) Fixture genérico, todos los partidos del matchday el mismo día
 ├── update-fixture-dates.ts  # Actualiza fecha/hora de partidos existentes SIN borrar (matchea por matchday + homeTeam + awayTeam)
 └── sync-from-besoccer.ts    # Sync in-place desde BeSoccer (apiId, fecha/hora si no es placeholder, goles/estado FINISHED + recuento de puntos)
+
+.github/workflows/
+└── sync-besoccer.yml        # Scheduler: */15 results (ventana ±3h) + 0 8 * * * fixture (1x/día), header CRON_SECRET
 ```
 
 ## Prisma Schema (Key Models)
@@ -127,7 +134,8 @@ scripts/
 - **GitHub**: `https://github.com/javirroldan/prode-liga`
 - **Vercel**: `https://prode-liga.vercel.app`
 - Auto-deploys on push to `main` branch
-- Environment variables configured in Vercel dashboard
+- Environment variables configured in Vercel dashboard (incluye `BESOCCER_API_KEY` y `CRON_SECRET`)
+- `CRON_SECRET` además es **secret de GitHub Actions** (Settings → Secrets and variables → Actions) para el workflow de sync
 
 ## Known Issues / Notes
 - API-Football free plan only supports seasons 2022-2024, not 2026

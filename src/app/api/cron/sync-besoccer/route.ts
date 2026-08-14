@@ -12,9 +12,25 @@ import { calculatePoints } from "@/services/scoring";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-// Sincroniza las jornadas current-1 a current+2 desde BeSoccer.
-// Cron de Vercel: */5 * * * *
-async function syncRound(tournamentId: string, round: number) {
+// Sincroniza una jornada desde BeSoccer (in-place, no borra).
+// - mode "results": solo si hay partidos a ±3h del kickoff (ahorro de cuota).
+// - mode "fixture": siempre (actualiza fechas de jornadas futuras).
+const WINDOW_HOURS = 3;
+
+async function roundHasActivity(tournamentId: string, round: number): Promise<boolean> {
+  const now = new Date();
+  const from = new Date(now.getTime() - WINDOW_HOURS * 60 * 60 * 1000);
+  const to = new Date(now.getTime() + WINDOW_HOURS * 60 * 60 * 1000);
+  const count = await prisma.match.count({
+    where: { tournamentId, matchday: round, date: { gte: from, lte: to } },
+  });
+  return count > 0;
+}
+
+async function syncRound(tournamentId: string, round: number, mode: "results" | "fixture") {
+  if (mode === "results" && !(await roundHasActivity(tournamentId, round))) {
+    return { round, window: false, updated: 0 };
+  }
   const matches = await fetchMatchday(round);
   if (matches.length === 0) return { round, empty: true, updated: 0 };
 
@@ -151,14 +167,19 @@ export async function GET(request: Request) {
         : matchdays[futureIndex - 1].matchday;
 
   const rounds: number[] = [];
-  for (let r = (current ?? 1) - 1; r <= (current ?? 1) + 2; r++) {
+  // results: rondas actual-1..actual+1; fixture: actual+1..actual+2
+  const { searchParams } = new URL(request.url);
+  const mode = searchParams.get("mode") === "fixture" ? "fixture" : "results";
+  const start = mode === "fixture" ? (current ?? 1) + 1 : (current ?? 1) - 1;
+  const end = mode === "fixture" ? (current ?? 1) + 2 : (current ?? 1) + 1;
+  for (let r = start; r <= end; r++) {
     if (r >= 1 && r <= 16 && !rounds.includes(r)) rounds.push(r);
   }
 
   const results = [];
   for (const round of rounds) {
     try {
-      results.push(await syncRound(tournament.id, round));
+      results.push(await syncRound(tournament.id, round, mode));
       await new Promise((r) => setTimeout(r, 1500));
     } catch (e) {
       results.push({ round, error: e instanceof Error ? e.message : String(e) });
@@ -167,5 +188,5 @@ export async function GET(request: Request) {
 
   await recalculatePoints(tournament.id);
 
-  return NextResponse.json({ current, results });
+  return NextResponse.json({ current, mode, results });
 }

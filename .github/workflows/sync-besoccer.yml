@@ -2,15 +2,23 @@ name: Sync BeSoccer
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/15 * * * *"
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Llamar sync de BeSoccer
+      - name: Sync resultados (cada 15 min, ventana de partidos)
+        if: ${{ github.event_name != 'schedule' || github.event.schedule == '*/15 * * * *' }}
         run: |
           curl -f --max-time 240 \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "https://prode-liga.vercel.app/api/cron/sync-besoccer"
+      - name: Sync fechas de jornadas futuras (1x/día)
+        if: ${{ github.event_name != 'schedule' || github.event.schedule == '0 8 * * *' }}
+        run: |
+          curl -f --max-time 240 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://prode-liga.vercel.app/api/cron/sync-besoccer?mode=fixture"

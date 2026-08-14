@@ -144,6 +144,12 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
 
             {/* Score */}
             <div className="flex flex-col items-center gap-0.5 shrink-0">
+              {isFinished && (
+                <span className="inline-flex items-center gap-1 font-semibold text-green-400 text-xs">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Finalizado
+                </span>
+              )}
               {isFinished || isLive ? (
                 <div
                   className={cn(
@@ -219,19 +225,13 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
         </div>
 
         {/* Row 2: Date + Status / Action */}
-        <div className={cn("flex items-center text-xs", isFinished ? "justify-end" : "justify-between")}>
+        <div className="flex items-center justify-between text-xs">
           {!isFinished && (
             <span className="text-yellow-200/80">
               {dateStr} {match.time || ""}
             </span>
           )}
           <div>
-            {isFinished && (
-              <span className="inline-flex items-center gap-1 font-semibold text-green-400">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Finalizado
-              </span>
-            )}
             {isLive && (
               <span className="inline-flex items-center gap-1 font-semibold text-red-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />

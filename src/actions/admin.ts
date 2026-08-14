@@ -129,7 +129,7 @@ export async function setMatchStatus(matchId: string, status: "SCHEDULED" | "LIV
 
   await prisma.match.update({
     where: { id: matchId },
-    data: { status, homeGoals: null, awayGoals: null },
+    data: { status, homeGoals: null, awayGoals: null, manualResult: true },
   });
 
   if (wasFinished) {
@@ -170,7 +170,7 @@ export async function updateLiveScore(
 
   await prisma.match.update({
     where: { id: matchId },
-    data: { homeGoals, awayGoals },
+    data: { homeGoals, awayGoals, manualResult: true },
   });
 
   revalidatePath("/admin");
@@ -202,6 +202,7 @@ export async function submitMatchResult(
         homeGoals,
         awayGoals,
         status: "FINISHED",
+        manualResult: true,
       },
     });
 
@@ -330,7 +331,7 @@ export async function resetMatchday(matchday: number) {
 
     await prisma.match.update({
       where: { id: match.id },
-      data: { homeGoals: null, awayGoals: null, status: "SCHEDULED" },
+      data: { homeGoals: null, awayGoals: null, status: "SCHEDULED", manualResult: false },
     });
   }
 

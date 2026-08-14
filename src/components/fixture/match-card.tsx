@@ -213,9 +213,11 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
 
         {/* Row 2: Date + Prediction + Status / Action */}
         <div className="flex items-center justify-between text-xs">
-          <span className="text-white/40">
-            {dateStr} {match.time || ""}
-          </span>
+          {!isFinished && (
+            <span className="text-yellow-200/80">
+              {dateStr} {match.time || ""}
+            </span>
+          )}
           {(isFinished || isLive) && prediction && (
             <span className="text-yellow-200/70">
               (vos: {prediction.homeGoals} - {prediction.awayGoals})

@@ -143,57 +143,64 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
             </div>
 
             {/* Score */}
-            {isFinished || isLive ? (
-              <div
-                className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-2 py-1 shrink-0",
-                  gotPoints && "bg-green-500/20",
-                  gotZero && "bg-red-500/20"
-                )}
-              >
-                <span
+            <div className="flex flex-col items-center gap-0.5 shrink-0">
+              {isFinished || isLive ? (
+                <div
                   className={cn(
-                    "text-base font-bold min-w-[1.5ch] text-center",
-                    gotPoints ? "text-green-400" : gotZero ? "text-red-400" : "text-white"
+                    "flex items-center gap-1.5 rounded-lg px-2 py-1",
+                    gotPoints && "bg-green-500/20",
+                    gotZero && "bg-red-500/20"
                   )}
                 >
-                  {match.homeGoals ?? "-"}
+                  <span
+                    className={cn(
+                      "text-base font-bold min-w-[1.5ch] text-center",
+                      gotPoints ? "text-green-400" : gotZero ? "text-red-400" : "text-white"
+                    )}
+                  >
+                    {match.homeGoals ?? "-"}
+                  </span>
+                  <span className="text-xs font-bold text-white/30">-</span>
+                  <span
+                    className={cn(
+                      "text-base font-bold min-w-[1.5ch] text-center",
+                      gotPoints ? "text-green-400" : gotZero ? "text-red-400" : "text-white"
+                    )}
+                  >
+                    {match.awayGoals ?? "-"}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <Input
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={homeGoals}
+                    onChange={(e) => setHomeGoals(e.target.value)}
+                    disabled={isLocked}
+                    className="h-8 w-10 text-center text-base font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                    placeholder="0"
+                  />
+                  <Minus className="h-3 w-3 text-white/30" />
+                  <Input
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={awayGoals}
+                    onChange={(e) => setAwayGoals(e.target.value)}
+                    disabled={isLocked}
+                    className="h-8 w-10 text-center text-base font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                    placeholder="0"
+                  />
+                </div>
+              )}
+              {(isFinished || isLive) && prediction && (
+                <span className="text-yellow-200/80 text-xs font-semibold">
+                  ({prediction.homeGoals}-{prediction.awayGoals})
                 </span>
-                <span className="text-xs font-bold text-white/30">-</span>
-                <span
-                  className={cn(
-                    "text-base font-bold min-w-[1.5ch] text-center",
-                    gotPoints ? "text-green-400" : gotZero ? "text-red-400" : "text-white"
-                  )}
-                >
-                  {match.awayGoals ?? "-"}
-                </span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 shrink-0">
-                <Input
-                  type="number"
-                  min="0"
-                  max="20"
-                  value={homeGoals}
-                  onChange={(e) => setHomeGoals(e.target.value)}
-                  disabled={isLocked}
-                  className="h-8 w-10 text-center text-base font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none bg-white/10 border-white/20 text-white placeholder:text-white/30"
-                  placeholder="0"
-                />
-                <Minus className="h-3 w-3 text-white/30" />
-                <Input
-                  type="number"
-                  min="0"
-                  max="20"
-                  value={awayGoals}
-                  onChange={(e) => setAwayGoals(e.target.value)}
-                  disabled={isLocked}
-                  className="h-8 w-10 text-center text-base font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none bg-white/10 border-white/20 text-white placeholder:text-white/30"
-                  placeholder="0"
-                />
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Away team */}
             <div className="flex-1 flex flex-col items-start gap-1 min-w-0">
@@ -211,16 +218,11 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
           </div>
         </div>
 
-        {/* Row 2: Date + Prediction + Status / Action */}
-        <div className="flex items-center justify-between text-xs">
+        {/* Row 2: Date + Status / Action */}
+        <div className={cn("flex items-center text-xs", isFinished ? "justify-end" : "justify-between")}>
           {!isFinished && (
             <span className="text-yellow-200/80">
               {dateStr} {match.time || ""}
-            </span>
-          )}
-          {(isFinished || isLive) && prediction && (
-            <span className="text-yellow-200/70">
-              (vos: {prediction.homeGoals} - {prediction.awayGoals})
             </span>
           )}
           <div>

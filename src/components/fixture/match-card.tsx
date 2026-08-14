@@ -9,7 +9,7 @@ import { isMatchLocked } from "@/lib/match-utils";
 import { getTeamLogo } from "@/lib/team-logos";
 import { getTeamDisplayName } from "@/lib/team-display";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Lock, Minus, CalendarX } from "lucide-react";
+import { Lock, Minus, CalendarX } from "lucide-react";
 
 interface MatchCardProps {
   match: {
@@ -145,8 +145,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
             {/* Score */}
             <div className="flex flex-col items-center gap-0.5 shrink-0">
               {isFinished && (
-                <span className="inline-flex items-center gap-1 font-semibold text-green-400 text-xs">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
+                <span className="inline-flex items-center gap-1 font-semibold text-blue-400 text-xs">
                   Finalizado
                 </span>
               )}

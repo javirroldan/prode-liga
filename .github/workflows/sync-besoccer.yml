@@ -1,0 +1,16 @@
+name: Sync BeSoccer
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar sync de BeSoccer
+        run: |
+          curl -f --max-time 240 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://prode-liga.vercel.app/api/cron/sync-besoccer"

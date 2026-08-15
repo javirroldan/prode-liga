@@ -141,6 +141,7 @@ scripts/
 ## Known Issues / Notes
 - API-Football free plan only supports seasons 2022-2024, not 2026
 - Código de estado LIVE de BeSoccer sin confirmar (solo se conocen -1=SCHEDULED y 1=FINISHED). Los partidos LIVE/POSTPONED quedan manuales hasta confirmar
+- LIVE automático (goles parciales + badge "EN VIVO") diferido: en prueba gratis de la API por 7 días. Si se contrata la API, evaluar detección de LIVE con `req=live_matches`
 - `NEXT_PUBLIC_APP_URL` should be set to `https://prode-liga.vercel.app` in Vercel
 - Scripts in `/scripts` folder are excluded from TypeScript compilation (tsconfig exclude)
 - Supabase email confirmation should be disabled for easy registration

@@ -106,7 +106,8 @@ async function main() {
         awayTeam,
       },
       data: {
-        date: new Date(date + 'T' + time + ':00.000Z'),
+        // hora local argentina (UTC-3) -> instante real UTC
+        date: new Date(date + 'T' + time + ':00.000-03:00'),
         time,
       },
     });

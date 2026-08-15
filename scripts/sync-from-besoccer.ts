@@ -159,10 +159,11 @@ async function main() {
       }
 
       if (!placeholder) {
+        // schedule de BeSoccer = hora local argentina (UTC-3) -> instante real UTC
         const datePart = m.schedule.slice(0, 10);
         const timePart = m.schedule.slice(11, 16);
         if (datePart && timePart) {
-          const newDate = new Date(`${datePart}T${timePart}:00.000Z`);
+          const newDate = new Date(`${datePart}T${timePart}:00.000-03:00`);
           const newTime = timePart;
           const dbDate = new Date(dbMatch.date).toISOString().slice(0, 16);
           const newDateStr = newDate.toISOString().slice(0, 16);

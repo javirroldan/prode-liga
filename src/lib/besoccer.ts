@@ -65,6 +65,17 @@ export function parseGoals(value: string | number | null | undefined): number | 
   return Number.isNaN(n) ? null : n;
 }
 
+// Argentina usa UTC-3 todo el año (sin horario de verano desde 2009).
+const ARGENTINA_UTC_OFFSET = "-03:00";
+
+// Convierte el `schedule` de BeSoccer (hora local argentina) al instante real UTC.
+// Ej: "2026-08-14 20:30:00" (20:30 AR = UTC-3) -> 2026-08-14T23:30:00.000Z
+export function scheduleToUtc(schedule: string): Date {
+  const datePart = schedule.slice(0, 10);
+  const timePart = schedule.slice(11, 16);
+  return new Date(`${datePart}T${timePart}:00.000${ARGENTINA_UTC_OFFSET}`);
+}
+
 export function isPlaceholderRound(matches: BeSoccerMatch[]): boolean {
   if (matches.length === 0) return false;
   const schedules = new Set(matches.map((m) => m.schedule));

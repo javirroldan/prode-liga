@@ -36,7 +36,7 @@ export async function submitPrediction(formData: FormData) {
     return { error: "No se pueden cargar pronósticos para partidos ya iniciados" };
   }
 
-  if (isMatchLocked(match.date, match.time)) {
+  if (isMatchLocked(match.date)) {
     return { error: "El pronóstico se bloquea 30 minutos antes del inicio del partido" };
   }
 

@@ -6,6 +6,7 @@ import {
   parseGoals,
   mapStatus,
   isPlaceholderRound,
+  scheduleToUtc,
 } from "@/lib/besoccer";
 import { calculatePoints } from "@/services/scoring";
 
@@ -51,17 +52,14 @@ async function syncRound(tournamentId: string, round: number, mode: "results" | 
     if (dbMatch.apiId !== Number(m.id)) data.apiId = Number(m.id);
 
     if (!placeholder) {
-      const datePart = m.schedule.slice(0, 10);
+      const newDate = scheduleToUtc(m.schedule);
       const timePart = m.schedule.slice(11, 16);
-      if (datePart && timePart) {
-        const newDate = new Date(`${datePart}T${timePart}:00.000Z`);
-        if (
-          new Date(dbMatch.date).toISOString().slice(0, 16) !== newDate.toISOString().slice(0, 16) ||
-          (dbMatch.time ?? "") !== timePart
-        ) {
-          data.date = newDate;
-          data.time = timePart;
-        }
+      if (
+        new Date(dbMatch.date).toISOString().slice(0, 16) !== newDate.toISOString().slice(0, 16) ||
+        (dbMatch.time ?? "") !== timePart
+      ) {
+        data.date = newDate;
+        data.time = timePart;
       }
     }
 

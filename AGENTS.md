@@ -55,7 +55,8 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Corrección de resultados**: Matches FINISHED se pueden re-editar (el admin puede corregir goles)
 - **Reabrir partidos**: Admin puede cambiar status FINISHED → LIVE (resetea goles y puntos)
 - **Actualización parcial**: En partidos LIVE, admin puede actualizar goles sin finalizar ("Actualizar parcial" + "Finalizar")
-- **Bloqueo automático**: Pronósticos se bloquean 1 hora antes del inicio del partido
+- **Bloqueo automático**: Pronósticos se bloquean 30 minutos antes del inicio del partido
+- **Convención de fecha/hora**: `Match.date` guarda el **instante real en UTC** (el `schedule` de BeSoccer viene en hora local argentina y se convierte con offset `-03:00`). `Match.time` es la hora local AR de display `"HH:MM"`. La hora local se muestra usando `time`, y el día con `toLocaleDateString` en el browser. NUNCA sumar/restar horas a mano (histórico: antes se guardaba hora local como si fuera UTC y se compensaba con +3h en algunos lados, lo que rompía la ventana del sync)
 - **Auto-detección fecha actual**: Basada en fecha del primer partido (compara solo fecha, sin hora — a partir de las 00:00 del día que se juega, se muestra esa fecha). Tanto dashboard, fixture como admin muestran la fecha actual por defecto
 - **Banner "Fecha finalizada"**: Aparece arriba de los partidos cuando toda la fecha está completada
 - **Predicción del usuario en cards**: Muestra `(vos: X - X)` en amarillo pastel

@@ -302,7 +302,7 @@ async function main() {
     matchday: m.matchday,
     homeTeam: m.home,
     awayTeam: m.away,
-    date: new Date(m.date + 'T' + m.time + ':00.000Z'),
+    date: new Date(m.date + 'T' + m.time + ':00.000-03:00'),
     time: m.time,
     status: 'SCHEDULED',
   }));

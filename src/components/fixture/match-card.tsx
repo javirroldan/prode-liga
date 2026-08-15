@@ -77,7 +77,7 @@ export function MatchCard({ match, prediction }: MatchCardProps) {
 
   const isFinished = match.status === "FINISHED";
   const isLive = match.status === "LIVE";
-  const isTimeLocked = isMatchLocked(new Date(match.date), match.time ?? null);
+  const isTimeLocked = isMatchLocked(new Date(match.date));
   const isLocked = match.status !== "SCHEDULED" || isTimeLocked;
 
   const matchDate = new Date(match.date);

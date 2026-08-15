@@ -2,16 +2,14 @@ import { prisma } from "@/lib/prisma";
 
 /**
  * Check if a match is locked (cannot accept predictions).
- * Locked when less than 1 hour until kickoff or match already started.
+ * Locked when less than 30 minutes until kickoff or match already started.
+ *
+ * `matchDate` es el instante real del kickoff en UTC (la DB guarda UTC real;
+ * la hora local argentina solo se usa para mostrar, en el campo `time`).
  */
-export function isMatchLocked(matchDate: Date, time: string | null): boolean {
+export function isMatchLocked(matchDate: Date): boolean {
   const now = new Date();
   const matchDateTime = new Date(matchDate);
-
-  if (time) {
-    const [hours, minutes] = time.split(":").map(Number);
-    matchDateTime.setUTCHours(hours + 3, minutes, 0, 0);
-  }
 
   const diff = matchDateTime.getTime() - now.getTime();
   const thirtyMinutesMs = 30 * 60 * 1000;

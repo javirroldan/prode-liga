@@ -1,4 +1,4 @@
-const LOGO_VERSION = "2";
+const LOGO_VERSION = "3";
 
 const teamLogos: Record<string, string> = {
   "River Plate": "/logos/river.png",

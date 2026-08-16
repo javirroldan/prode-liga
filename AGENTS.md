@@ -66,7 +66,8 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Ranking con desempate**: Orden por puntos, luego por más predicciones de 12, 7, 5, 2
 - **Ranking por fecha**: Tab que muestra quién ganó cada fecha
 - **Estadísticas**: Desglose de predicciones por tier (12, 7, 5, 2, 0) por usuario
-- **Escudos de equipos**: Logos PNG en `public/logos/`, mapping en `src/lib/team-logos.ts`, mostrados en admin
+- **Escudos de equipos**: Logos PNG en `public/logos/`, mapping en `src/lib/team-logos.ts`, mostrados en admin y fixture (match-card). Normalizados a fill ~45% del canvas 1500x1500 (12 equipos con padding excesivo recortados: Aldosivi, Racing, Estudiantes LP, Belgrano, River Plate, Argentinos Juniors, Rosario Central, Instituto, Independiente, Newell's, Huracán, Banfield; Argentinos quedó en 50% por pedido del admin). Talleres NO se tocó. `getTeamLogo()` agrega `?v=LOGO_VERSION` (cache-buster): al cambiar logos, subir `LOGO_VERSION` en team-logos.ts
+- **Nombres display acortados**: `src/lib/team-display.ts` acorta nombres que se rompen en dos líneas en mobile: "Argentinos Juniors"→"Argentinos", "Defensa y Justicia"→"Defensa" (y otros). Solo afecta display, no el matcheo de BeSoccer (usa el nombre completo de la DB)
 - **Quitar usuarios del torneo**: Admin puede eliminar participantes desde admin/page.tsx
 - **Partidos postergados**: Admin puede marcar partidos como POSTPONED. Se muestran en banner separado al final del dashboard. Si el partido tiene fecha futura, queda bloqueado; cuando la fecha llega, se activa automáticamente y permite pronósticos (bloquea 1 hora antes del kickoff como cualquier partido)
 
@@ -105,8 +106,9 @@ src/
 │   ├── prisma.ts     # Prisma client singleton
 │   ├── supabase/     # server.ts, client.ts, middleware.ts
 │   ├── utils.ts      # cn() helper
-│   ├── team-logos.ts # Mapping equipo→logo (/logos/xxx.png)
-│   ├── besoccer.ts   # Cliente API BeSoccer + normalización de nombres + fetchMatchday
+│   ├── team-logos.ts   # Mapping equipo→logo (/logos/xxx.png) + cache-buster ?v=LOGO_VERSION
+│   ├── team-display.ts # Nombres acortados para display mobile (getTeamDisplayName)
+│   ├── besoccer.ts     # Cliente API BeSoccer + normalización de nombres + fetchMatchday
 │   └── match-utils.ts # isMatchLocked(), getCurrentMatchday()
 ├── services/
 │   ├── scoring.ts    # calculatePoints() - returns 12, 7, 5, 2, or 0
@@ -149,7 +151,7 @@ scripts/
 - PWA: install on Android shows "Crear acceso directo" instead of "Instalar app"
 - Service Worker solo se registra en production (no en localhost) para evitar errores de ChunkLoadError en dev
 - Admin mobile: cards con layout apilado (equipo+input por fila), botón Reiniciar arriba del selector
-- Team logos: solo en admin por ahora, 30 equipos mapeados en team-logos.ts
+- Team logos: 30 equipos mapeados en team-logos.ts, mostrados en admin y fixture. Cache-buster `?v=LOGO_VERSION`: al reemplazar un logo, subir la versión en team-logos.ts para forzar refresh del browser
 - Nombres de equipos normalizados. Mapping completo en equipos_liga_argentina_2026.json
 - Hay overrides en src/lib/team-abbrevs.ts para nombres que no matchean exacto entre DB y JSON
 - Fechas 8-16 del fixture tienen fechas estimadas semanales. Cuando AFA confirme la agenda, corregir con scripts/update-fixture-dates.ts

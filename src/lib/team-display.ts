@@ -4,6 +4,7 @@ const teamDisplayNames: Record<string, string> = {
   "Gimnasia y Esgrima LP": "Gimnasia LP",
   "Independiente Rivadavia": "Independiente (R)",
   "Argentinos Juniors": "Argentinos",
+  "Defensa y Justicia": "Defensa",
 };
 
 export function getTeamDisplayName(teamName: string): string {

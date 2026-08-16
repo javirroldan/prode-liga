@@ -1,3 +1,5 @@
+const LOGO_VERSION = "2";
+
 const teamLogos: Record<string, string> = {
   "River Plate": "/logos/river.png",
   "Boca Juniors": "/logos/boca.png",
@@ -32,5 +34,6 @@ const teamLogos: Record<string, string> = {
 };
 
 export function getTeamLogo(teamName: string): string | null {
-  return teamLogos[teamName] ?? null;
+  const logo = teamLogos[teamName];
+  return logo ? `${logo}?v=${LOGO_VERSION}` : null;
 }

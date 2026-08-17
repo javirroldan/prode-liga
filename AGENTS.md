@@ -36,7 +36,7 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Pruebas**: `node --env-file=.env.local scripts/test-besoccer.ts [country] [leagueId] [round] [year]` (no toca la DB)
 - **Sync manual**: `node --env-file=.env.local scripts/sync-from-besoccer.ts [roundStart] [roundEnd]` (in-place, NO borra; sin args sincroniza 1-16)
 - **Sync automático**: GitHub Actions (`.github/workflows/sync-besoccer.yml`, repo público = gratis, NO cron de Vercel: plan Hobby solo permite 1 cron/día). Llaman al endpoint `app/api/cron/sync-besoccer` con header `Authorization: Bearer $CRON_SECRET` (secret en GitHub Actions):
-  - **`*/5 * * * *`** → `?mode=results` (default): rondas current-1..current+1, pero SOLO consulta BeSoccer si hay partidos a **±3h del kickoff** (`window:false` = 0 peticiones). Resultados auto ~5 min post pitazo
+  - **`*/5 * * * *` + offsets** → `?mode=results` (default): rondas current-1..current+1, pero SOLO consulta BeSoccer si hay partidos a **±3h del kickoff** (`window:false` = 0 peticiones). Resultados auto ~5 min post pitazo. 3 crons offseteados (*/5 + 2-57/5 + 4-59/5) para compensar delays de GitHub Actions
   - **`0 8 * * *`** (1x/día) → `?mode=fixture`: rondas current+1..current+2 sin límite de ventana (2 peticiones) para captar fechas de agenda AFA
 - **Cuota BeSoccer**: 500 peticiones/día (resetea a las 0h). Consumo con este diseño: ~2/día sin partidos, ~120-210/día con partidos. No usar el endpoint en modo results fuera de ventana para no gastar cuota
 

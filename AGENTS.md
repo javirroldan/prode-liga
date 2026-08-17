@@ -35,9 +35,9 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Placeholder**: fechas 8-16 aún no confirmadas por AFA; BeSoccer también las trae estimadas (todos los partidos con la misma fecha/hora 16:00). El sync detecta esto y NO toca fechas existentes
 - **Pruebas**: `node --env-file=.env.local scripts/test-besoccer.ts [country] [leagueId] [round] [year]` (no toca la DB)
 - **Sync manual**: `node --env-file=.env.local scripts/sync-from-besoccer.ts [roundStart] [roundEnd]` (in-place, NO borra; sin args sincroniza 1-16)
-- **Sync automático**: GitHub Actions (`.github/workflows/sync-besoccer.yml`, repo público = gratis, NO cron de Vercel: plan Hobby solo permite 1 cron/día). Llaman al endpoint `app/api/cron/sync-besoccer` con header `Authorization: Bearer $CRON_SECRET` (secret en GitHub Actions):
-  - **`*/5 * * * *` + offsets** → `?mode=results` (default): rondas current-1..current+1, pero SOLO consulta BeSoccer si hay partidos a **±3h del kickoff** (`window:false` = 0 peticiones). Resultados auto ~5 min post pitazo. 3 crons offseteados (*/5 + 2-57/5 + 4-59/5) para compensar delays de GitHub Actions
-  - **`0 8 * * *`** (1x/día) → `?mode=fixture`: rondas current+1..current+2 sin límite de ventana (2 peticiones) para captar fechas de agenda AFA
+- **Sync automático**: 
+  - **cron-job.org** (gratis, confiable): Job "Prode-Sync" llama cada 5 minutos al endpoint `https://prode-liga.vercel.app/api/cron/sync-besoccer` con header `Authorization: Bearer $CRON_SECRET` (guardado como header en cron-job.org). Results auto ~5 min post pitazo
+  - **GitHub Actions** (`.github/workflows/sync-besoccer.yml`): solo `0 8 * * *` (1x/día) → `?mode=fixture`: rondas current+1..current+2 sin límite de ventana (2 peticiones) para captar fechas de agenda AFA. NO cron de Vercel: plan Hobby solo permite 1 cron/día
 - **Cuota BeSoccer**: 500 peticiones/día (resetea a las 0h). Consumo con este diseño: ~2/día sin partidos, ~120-210/día con partidos. No usar el endpoint en modo results fuera de ventana para no gastar cuota
 
 ## Scoring Rules
@@ -123,7 +123,7 @@ scripts/
 └── sync-from-besoccer.ts    # Sync in-place desde BeSoccer (apiId, fecha/hora si no es placeholder, goles/estado FINISHED + recuento de puntos)
 
 .github/workflows/
-└── sync-besoccer.yml        # Scheduler: */5 results (ventana ±3h) + 0 8 * * * fixture (1x/día), header CRON_SECRET
+└── sync-besoccer.yml        # Scheduler: solo 0 8 * * * fixture (1x/día), header CRON_SECRET. Results sync via cron-job.org
 ```
 
 ## Prisma Schema (Key Models)
@@ -138,7 +138,7 @@ scripts/
 - **Vercel**: `https://prode-liga.vercel.app`
 - Auto-deploys on push to `main` branch
 - Environment variables configured in Vercel dashboard (incluye `BESOCCER_API_KEY` y `CRON_SECRET`)
-- `CRON_SECRET` además es **secret de GitHub Actions** (Settings → Secrets and variables → Actions) para el workflow de sync
+- `CRON_SECRET` además es **secret de GitHub Actions** (Settings → Secrets and variables → Actions) para el workflow de sync, y se usa como header en cron-job.org
 
 ## Known Issues / Notes
 - API-Football free plan only supports seasons 2022-2024, not 2026

@@ -36,9 +36,9 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Pruebas**: `node --env-file=.env.local scripts/test-besoccer.ts [country] [leagueId] [round] [year]` (no toca la DB)
 - **Sync manual**: `node --env-file=.env.local scripts/sync-from-besoccer.ts [roundStart] [roundEnd]` (in-place, NO borra; sin args sincroniza 1-16)
 - **Sync automático**: GitHub Actions (`.github/workflows/sync-besoccer.yml`, repo público = gratis, NO cron de Vercel: plan Hobby solo permite 1 cron/día). Llaman al endpoint `app/api/cron/sync-besoccer` con header `Authorization: Bearer $CRON_SECRET` (secret en GitHub Actions):
-  - **`*/15 * * * *`** → `?mode=results` (default): rondas current-1..current+1, pero SOLO consulta BeSoccer si hay partidos a **±3h del kickoff** (`window:false` = 0 peticiones). Resultados auto ~15 min post pitazo
+  - **`*/5 * * * *`** → `?mode=results` (default): rondas current-1..current+1, pero SOLO consulta BeSoccer si hay partidos a **±3h del kickoff** (`window:false` = 0 peticiones). Resultados auto ~5 min post pitazo
   - **`0 8 * * *`** (1x/día) → `?mode=fixture`: rondas current+1..current+2 sin límite de ventana (2 peticiones) para captar fechas de agenda AFA
-- **Cuota BeSoccer**: 500 peticiones/día (resetea a las 0h). Consumo con este diseño: ~2/día sin partidos, ~40-70/día con partidos. No usar el endpoint en modo results fuera de ventana para no gastar cuota
+- **Cuota BeSoccer**: 500 peticiones/día (resetea a las 0h). Consumo con este diseño: ~2/día sin partidos, ~120-210/día con partidos. No usar el endpoint en modo results fuera de ventana para no gastar cuota
 
 ## Scoring Rules
 - 12 puntos: resultado exacto (badge amarillo)
@@ -123,7 +123,7 @@ scripts/
 └── sync-from-besoccer.ts    # Sync in-place desde BeSoccer (apiId, fecha/hora si no es placeholder, goles/estado FINISHED + recuento de puntos)
 
 .github/workflows/
-└── sync-besoccer.yml        # Scheduler: */15 results (ventana ±3h) + 0 8 * * * fixture (1x/día), header CRON_SECRET
+└── sync-besoccer.yml        # Scheduler: */5 results (ventana ±3h) + 0 8 * * * fixture (1x/día), header CRON_SECRET
 ```
 
 ## Prisma Schema (Key Models)

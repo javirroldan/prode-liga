@@ -2,8 +2,8 @@
 
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { login, syncSession } from "@/actions/auth";
-import { createClient, AUTH_BACKUP_KEY } from "@/lib/supabase/client";
+import { login } from "@/actions/auth";
+import { recoverSession } from "@/lib/recover-session";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,45 +24,13 @@ export default function LoginPage() {
     {}
   );
 
-  // Auto-recuperación de sesión: si el dispositivo limpió cookies al cerrar
-  // la PWA, restauramos desde el backup localStorage vía syncSession.
-  // Corre SIEMPRE al montar: el usuario puede llegar acá desde el landing
-  // público (sin el flag ?recovery=1 del middleware). Es seguro porque el
-  // logout manual limpia el backup antes de cerrar sesión en el server.
+  // Auto-recuperación de sesión al montar: cookies vivas → dashboard;
+  // cookies limpiadas → restaura desde el backup localStorage. Es seguro
+  // porque el logout manual limpia el backup antes de cerrar sesión.
   useEffect(() => {
-    const recover = async () => {
-      const supabase = createClient();
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        router.replace("/dashboard");
-        return;
-      }
-
-      try {
-        const raw = localStorage.getItem(AUTH_BACKUP_KEY);
-        if (!raw) return;
-        const backup = JSON.parse(raw) as {
-          access_token?: string;
-          refresh_token?: string;
-        };
-        if (!backup.access_token || !backup.refresh_token) return;
-
-        const { ok } = await syncSession(backup.access_token, backup.refresh_token);
-        if (ok) {
-          router.replace("/dashboard");
-        } else {
-          // Backup revocado/expirado: limpiar para no reintentar
-          localStorage.removeItem(AUTH_BACKUP_KEY);
-        }
-      } catch {
-        // JSON corrupto o storage bloqueado: formulario normal
-      }
-    };
-
-    recover();
+    recoverSession().then((ok) => {
+      if (ok) router.replace("/dashboard");
+    });
   }, [router]);
 
   return (

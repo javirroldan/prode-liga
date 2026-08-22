@@ -1,11 +1,20 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/actions/auth";
+import { SessionRecovery } from "@/components/shared/session-recovery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Users, Zap, Shield } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  // Con cookies vivas: directo al dashboard sin flash. Sin cookies pero con
+  // backup localStorage, <SessionRecovery /> restaura y redirige en cliente.
+  const user = await getCurrentUser();
+  if (user) redirect("/dashboard");
+
   return (
     <div className="min-h-screen">
+      <SessionRecovery />
       {/* Hero */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent" />

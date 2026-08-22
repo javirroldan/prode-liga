@@ -27,6 +27,11 @@ function isCacheable(response) {
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
+
+  // POST/PUT/etc (Server Actions: pronósticos, resultados): pasan nativos,
+  // sin pasar por el handler de caché.
+  if (req.method !== "GET") return;
+
   const url = new URL(req.url);
 
   // Nunca interceptar APIs ni cross-origin (Supabase): siempre red.

@@ -70,6 +70,8 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Nombres display acortados**: `src/lib/team-display.ts` acorta nombres que se rompen en dos líneas en mobile: "Argentinos Juniors"→"Argentinos", "Defensa y Justicia"→"Defensa" (y otros). Solo afecta display, no el matcheo de BeSoccer (usa el nombre completo de la DB)
 - **Quitar usuarios del torneo**: Admin puede eliminar participantes desde admin/page.tsx
 - **Partidos postergados**: Admin puede marcar partidos como POSTPONED. Se muestran en banner separado al final del dashboard. Si el partido tiene fecha futura, queda bloqueado; cuando la fecha llega, se activa automáticamente y permite pronósticos (bloquea 1 hora antes del kickoff como cualquier partido)
+- **PWA**: Instalable y con soporte offline (ver PWA-GUIDE.md para la guía de referencia). Piezas: `src/app/manifest.ts` (servido en `/manifest.webmanifest`), `public/sw.js` (precache mínimo + network-first para HTML + cache-first/runtime caching para estáticos; ignora `/api/*` y requests cross-origin como Supabase) y registro inline en `layout.tsx` (solo production). El middleware NO debe interceptar `/sw.js` ni `/manifest.webmanifest` (excluidos en el matcher de `src/middleware.ts`)
+- **Íconos PWA**: deben ser PNG **cuadrados exactos** o Chrome deja de ofrecer "Instalar app": `icon-192x192.png` 192×192, `icon-512x512.png` 512×512, `apple-touch-icon.png` 180×180 (padding al fondo `#0a0a0a`)
 
 ## File Structure
 ```
@@ -148,7 +150,7 @@ scripts/
 - Scripts in `/scripts` folder are excluded from TypeScript compilation (tsconfig exclude)
 - Supabase email confirmation should be disabled for easy registration
 - First admin user: `pachu` (pachu.hyper@gmail.com)
-- PWA: install on Android shows "Crear acceso directo" instead of "Instalar app"
+- PWA fix (08/2026): no instalable por 3 causas corregidas — íconos PNG no cuadrados (regenerados con `magick -gravity center -background '#0a0a0a' -extent WxH`), middleware interceptando `/sw.js` y `/manifest.webmanifest` (redirect a login para no logueados), y sw.js passthrough sin caché (reescripto). Si vuelve a pasar, revisar esas 3 cosas
 - Service Worker solo se registra en production (no en localhost) para evitar errores de ChunkLoadError en dev
 - Admin mobile: cards con layout apilado (equipo+input por fila), botón Reiniciar arriba del selector
 - Team logos: 30 equipos mapeados en team-logos.ts, mostrados en admin y fixture. Cache-buster `?v=LOGO_VERSION`: al reemplazar un logo, subir la versión en team-logos.ts para forzar refresh del browser

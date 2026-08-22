@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AuthBackup } from "@/components/shared/auth-backup";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body className={inter.className}>
+        <AuthBackup />
         <script
           dangerouslySetInnerHTML={{
             __html: `if('serviceWorker' in navigator && window.location.hostname !== 'localhost'){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js')})}`,

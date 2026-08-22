@@ -25,11 +25,11 @@ export default function LoginPage() {
   );
 
   // Auto-recuperación de sesión: si el dispositivo limpió cookies al cerrar
-  // la PWA (middleware marca ?recovery=1), restauramos desde el backup
-  // localStorage. Primero probamos si la sesión de cookies sigue viva.
+  // la PWA, restauramos desde el backup localStorage vía syncSession.
+  // Corre SIEMPRE al montar: el usuario puede llegar acá desde el landing
+  // público (sin el flag ?recovery=1 del middleware). Es seguro porque el
+  // logout manual limpia el backup antes de cerrar sesión en el server.
   useEffect(() => {
-    if (!new URLSearchParams(window.location.search).has("recovery")) return;
-
     const recover = async () => {
       const supabase = createClient();
 

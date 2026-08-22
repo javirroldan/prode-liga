@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Trophy, LayoutDashboard, ListOrdered, LogOut } from "lucide-react";
 import { logout } from "@/actions/auth";
+import { AUTH_BACKUP_KEY } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/dashboard", label: "Partidos", icon: LayoutDashboard },
@@ -50,7 +51,16 @@ export function Navbar() {
             })}
           </div>
 
-          <form action={logout}>
+          <form
+            action={logout}
+            onSubmit={() => {
+              // Limpiar el backup antes de cerrar sesión: si no, la login
+              // page re-restauraría la sesión y el logout no funcionaría.
+              try {
+                localStorage.removeItem(AUTH_BACKUP_KEY);
+              } catch {}
+            }}
+          >
             <button
               type="submit"
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/5 hover:text-white cursor-pointer"

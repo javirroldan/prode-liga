@@ -62,6 +62,7 @@ Credentials are in `.env.local` and Vercel environment variables.
 - **Predicción del usuario en cards**: Muestra `(vos: X - X)` en amarillo pastel
 - **Invite code**: `LIGA2026` para unirse al torneo
 - **Recuperación de contraseña**: Flujo forgot-password → email Supabase → callback → update-password
+- **Auto-recuperación de sesión en PWA**: La sesión vive solo en cookies `sb-*` (400 días); algunos Androids/browsers OEM las limpian al cerrar la app instalada y pedían login siempre. Solución en 4 capas (08/2026): (1) `client.ts` espeja access/refresh token en localStorage (`prode-liga-auth-backup`) vía onAuthStateChange; (2) server action `syncSession` restaura cookies desde ese backup con `setSession` (valida contra Auth server); (3) el middleware marca sus redirects a login con `?recovery=1` — la login page entonces intenta getSession → syncSession → redirect a dashboard; un logout manual navega sin el flag y muestra el formulario normal; (4) sw.js nunca cachea `/auth/*` ni respuestas redirigidas (isCacheable exige `!response.redirected`). Si se toca auth, no romper este flujo
 - **Reset de fecha**: Admin puede reiniciar toda una fecha ("Reiniciar fecha X")
 - **Ranking con desempate**: Orden por puntos, luego por más predicciones de 12, 7, 5, 2
 - **Ranking por fecha**: Tab que muestra quién ganó cada fecha

@@ -1,4 +1,4 @@
-const CACHE_NAME = "prode-liga-v1";
+const CACHE_NAME = "prode-liga-v2";
 const ASSETS = ["/", "/manifest.webmanifest", "/icon-192x192.png", "/icon-512x512.png"];
 
 self.addEventListener("install", (event) => {
@@ -21,7 +21,8 @@ function isCacheable(response) {
   return (
     response &&
     response.status === 200 &&
-    response.type === "basic"
+    response.type === "basic" &&
+    !response.redirected
   );
 }
 
@@ -34,8 +35,14 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(req.url);
 
-  // Nunca interceptar APIs ni cross-origin (Supabase): siempre red.
-  if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) {
+  // Nunca cachear ni servir desde caché: APIs, cross-origin (Supabase) y
+  // páginas de auth (el callback intercambia códigos y el login no debe
+  // salir nunca de una copia cacheada).
+  if (
+    url.origin !== self.location.origin ||
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/auth/")
+  ) {
     return;
   }
 

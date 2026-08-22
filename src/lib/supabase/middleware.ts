@@ -41,6 +41,10 @@ export async function updateSession(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
+    // Marca el redirect para que la página de login intente recuperar la
+    // sesión desde el backup localStorage (syncSession). Un logout manual
+    // navega a /auth/login sin este flag y muestra el formulario normal.
+    url.searchParams.set("recovery", "1");
     return NextResponse.redirect(url);
   }
 

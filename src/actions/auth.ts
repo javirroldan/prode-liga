@@ -99,6 +99,25 @@ export async function logout() {
   redirect("/");
 }
 
+// Restaura las cookies de sesión desde el backup localStorage del cliente.
+// Se usa cuando el dispositivo limpió cookies al cerrar la PWA instalada.
+export async function syncSession(
+  accessToken: string,
+  refreshToken: string
+): Promise<{ ok: boolean }> {
+  if (!accessToken || !refreshToken) return { ok: false };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  });
+
+  // setSession valida contra Auth server y refresca tokens; si el refresh
+  // token fue revocado/expirado falla y las cookies quedan sin sesión.
+  return { ok: !error && !!data.session };
+}
+
 export async function getCurrentUser() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

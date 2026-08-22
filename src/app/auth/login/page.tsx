@@ -1,7 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
-import { login } from "@/actions/auth";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { login, syncSession } from "@/actions/auth";
+import { createClient, AUTH_BACKUP_KEY } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +15,7 @@ interface LoginState {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState<LoginState, FormData>(
     async (_prev, formData) => {
       const result = await login(formData);
@@ -20,6 +23,47 @@ export default function LoginPage() {
     },
     {}
   );
+
+  // Auto-recuperación de sesión: si el dispositivo limpió cookies al cerrar
+  // la PWA (middleware marca ?recovery=1), restauramos desde el backup
+  // localStorage. Primero probamos si la sesión de cookies sigue viva.
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has("recovery")) return;
+
+    const recover = async () => {
+      const supabase = createClient();
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        router.replace("/dashboard");
+        return;
+      }
+
+      try {
+        const raw = localStorage.getItem(AUTH_BACKUP_KEY);
+        if (!raw) return;
+        const backup = JSON.parse(raw) as {
+          access_token?: string;
+          refresh_token?: string;
+        };
+        if (!backup.access_token || !backup.refresh_token) return;
+
+        const { ok } = await syncSession(backup.access_token, backup.refresh_token);
+        if (ok) {
+          router.replace("/dashboard");
+        } else {
+          // Backup revocado/expirado: limpiar para no reintentar
+          localStorage.removeItem(AUTH_BACKUP_KEY);
+        }
+      } catch {
+        // JSON corrupto o storage bloqueado: formulario normal
+      }
+    };
+
+    recover();
+  }, [router]);
 
   return (
     <Card className="border-white/10 bg-black/60 backdrop-blur-lg">
